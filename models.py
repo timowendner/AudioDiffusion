@@ -6,9 +6,9 @@ import torch
 from einops import pack, rearrange, unpack
 from torch import Generator, Tensor, nn
 
-from components import AppendChannelsPlugin, MelSpectrogram
-from diffusion import ARVDiffusion, ARVSampler, VDiffusion, VSampler
-from utils import (
+from .components import AppendChannelsPlugin, MelSpectrogram
+from .diffusion import ARVDiffusion, ARVSampler, VDiffusion, VSampler
+from .utils import (
     closest_power_2,
     default,
     downsample,

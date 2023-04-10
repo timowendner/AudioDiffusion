@@ -1,8 +1,8 @@
 
-from components import UNetV0
-from models import DiffusionModel
-from diffusion import VDiffusion, VSampler
-from data_loader import AudioDataset
+from .components import UNetV0
+from .models import DiffusionModel
+from .diffusion import VDiffusion, VSampler
+from .data_loader import AudioDataset
 from torch.utils.data import Dataset, DataLoader
 import torch
 
