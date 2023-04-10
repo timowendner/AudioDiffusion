@@ -27,8 +27,7 @@ def train_model(data_dir: str):
     )
 
     # create the dataloader
-    audio_dir = "Data/DogBark"
-    dataset = AudioDataset(audio_dir)
+    dataset = AudioDataset(data_dir)
     dataloader = DataLoader(dataset, batch_size=16, shuffle=True)
 
     # Define loss function and optimizer
