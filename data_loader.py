@@ -19,6 +19,7 @@ class AudioDataset(Dataset):
         audio_file = os.path.join(self.audio_dir, self.audio_files[idx])
         waveform, sr = torchaudio.load(audio_file)
         waveform = torch.mean(waveform, dim=1, keepdim=True)
+        print(waveform.shape, sr)
 
         # specify the probabilities of that data augmentation
         eq_probability = 0.3
