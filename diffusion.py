@@ -8,7 +8,7 @@ from einops import rearrange, repeat
 from torch import Tensor
 from tqdm import tqdm
 
-from utils import default
+from .utils import default
 
 """ Distributions """
 

@@ -44,7 +44,7 @@ def prod(vals: Sequence[int]) -> int:
 
 def closest_power_2(x: float) -> int:
     exponent = log2(x)
-    distance_fn = lambda z: abs(x - 2 ** z)  # noqa
+    def distance_fn(z): return abs(x - 2 ** z)  # noqa
     exponent_closest = min((floor(exponent), ceil(exponent)), key=distance_fn)
     return 2 ** int(exponent_closest)
 
@@ -66,7 +66,8 @@ def groupby(prefix: str, d: Dict, keep_prefix: bool = False) -> Tuple[Dict, Dict
     kwargs_with_prefix, kwargs = group_dict_by_prefix(prefix, d)
     if keep_prefix:
         return kwargs_with_prefix, kwargs
-    kwargs_no_prefix = {k[len(prefix) :]: v for k, v in kwargs_with_prefix.items()}
+    kwargs_no_prefix = {k[len(prefix):]: v for k,
+                        v in kwargs_with_prefix.items()}
     return kwargs_no_prefix, kwargs
 
 
