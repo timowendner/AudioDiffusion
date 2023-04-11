@@ -22,8 +22,8 @@ def train_network(model, train_loader, num_epochs, optimizer, loss_func):
             # calculate gradients
             optimizer.zero_grad()
             loss.backward()
-            nn.utils.clip_grad_norm_(model.parameters(), 0.02)
             optimizer.step()
+            # nn.utils.clip_grad_norm_(model.parameters(), 0.001)
 
             if (i + 1) % 1 == 0:
                 print(
@@ -49,7 +49,7 @@ def main():
     # create the model
     model = UNet().to(device)
     loss_func = torch.nn.MSELoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.001,)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001,)
     num_epochs = 100
 
     # train the network

@@ -12,7 +12,7 @@ import glob
 class AudioDataset(Dataset):
     def __init__(self, file_path: str, device: torch.device, sample_rate=32768):
         files = glob.glob(os.path.join(
-            file_path, "**", "*.wav"), recursive=True)[:10]
+            file_path, "**", "*.wav"), recursive=True)
 
         waveforms = []
         for path in files:
@@ -61,11 +61,8 @@ class AudioDataset(Dataset):
                  * 2 - 1) * torch.clamp(r - 0.5, min=0)
         target = waveform + noise
 
+        # normalize the data
         model_input = model_input * 0.98 / torch.max(model_input)
         target = target * 0.98 / torch.max(target)
 
-        model_input = torch.from_numpy(np.ones(model_input.shape)).float()
-        target = torch.from_numpy(np.ones(target.shape)).float()
-        print(waveform.shape, model_input.shape)
-
-        return waveform.to(self.device), target.to(self.device)
+        return model_input.to(self.device), target.to(self.device)
