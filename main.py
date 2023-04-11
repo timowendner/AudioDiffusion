@@ -22,7 +22,7 @@ def train_network(model, train_loader, num_epochs, optimizer, loss_func):
             # calculate gradients
             optimizer.zero_grad()
             loss.backward()
-            nn.utils.clip_grad_norm_(model.parameters(), 5.0)
+            nn.utils.clip_grad_norm_(model.parameters(), 0.02)
             optimizer.step()
 
             loss[torch.isnan(loss)] = 0
