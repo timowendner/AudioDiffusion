@@ -60,7 +60,8 @@ class AudioDataset(Dataset):
         # noise = (torch.rand(waveform.shape,)
         #          * 2 - 1) * torch.clamp(r - 0.5, min=0)
         # target = waveform + noise
-
+        model_input = waveform
+        target = waveform
         model_input = model_input * 0.98 / torch.max(model_input)
         target = target * 0.98 / torch.max(target)
 
