@@ -25,6 +25,10 @@ def train_network(model, train_loader, num_epochs, optimizer, loss_func):
             nn.utils.clip_grad_norm_(model.parameters(), 5.0)
             optimizer.step()
 
+            if not torch.isnan(loss):
+                loss.backward()
+                optimizer.step()
+
             if (i + 1) % 1 == 0:
                 print(
                     f'Epoch [{epoch + 1}/{num_epochs}], Step [{i + 1}/{total_step}], Loss: {loss.item():.4f}')
