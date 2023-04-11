@@ -5,6 +5,16 @@ from torch.utils.data import Dataset, DataLoader
 
 from dataloader import AudioDataset
 from model import UNet
+import datetime
+import pickle as pkl
+
+
+def save_model(model):
+    # save the model with a timestamp
+    time_now = datetime.datetime.now()
+    time_now = time_now.strftime("%d_%b_%H%M")
+    pkl.dump(model.to(torch.device('cpu')), open(
+        f"trained_models/portal_chamber_{time_now}.p", "wb"))
 
 
 def train_network(model, train_loader, num_epochs, optimizer, loss_func):
@@ -25,11 +35,11 @@ def train_network(model, train_loader, num_epochs, optimizer, loss_func):
             optimizer.step()
             # nn.utils.clip_grad_norm_(model.parameters(), 0.001)
 
-            if (i + 1) % 1 == 0:
+            if (i + 1) % 10 == 0:
                 print(
                     f'Epoch [{epoch + 1}/{num_epochs}], Step [{i + 1}/{total_step}], Loss: {loss.item():.4f}')
-        # if epoch % 2 == 0:
-        #     save_model(model)
+        if epoch % 4 == 0:
+            save_model(model)
 
         # test the model and plot a example image
         # test_network(model, loaders["test"], device)

@@ -54,7 +54,7 @@ class AudioDataset(Dataset):
         waveform = torch.roll(waveform, int(start))
 
         # create the diffusion
-        r = (torch.rand(1,) ** 2) * 0.0
+        r = (torch.rand(1,) ** 2) * 4
         noise = (torch.rand(waveform.shape,) * 2 - 1) * r
         model_input = waveform + noise
         noise = (torch.rand(waveform.shape,)
