@@ -66,5 +66,6 @@ class AudioDataset(Dataset):
 
         model_input = torch.from_numpy(np.ones(model_input.shape)).float()
         target = torch.from_numpy(np.ones(target.shape)).float()
+        print(waveform.shape, model_input.shape)
 
         return waveform.to(self.device), target.to(self.device)
