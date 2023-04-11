@@ -25,9 +25,7 @@ def train_network(model, train_loader, num_epochs, optimizer, loss_func):
             nn.utils.clip_grad_norm_(model.parameters(), 5.0)
             optimizer.step()
 
-            if not torch.isnan(loss):
-                loss.backward()
-                optimizer.step()
+            loss[torch.isnan(loss)] = 0
 
             if (i + 1) % 1 == 0:
                 print(
