@@ -20,8 +20,8 @@ def save_model(model):
     time_now = time_now.strftime("%d_%b_%H%M")
 
     # save the model
-    filename = f"trained_models/portal_chamber_{time_now}.p"
-    pkl.dump(model.to(torch.device('cpu')), open(filename, "wb"))
+    filepath = f"trained_models/portal_chamber_{time_now}.p"
+    torch.save(model.state_dict(), filepath)
 
 
 def train_network(model, train_loader, num_epochs, optimizer, loss_func):
