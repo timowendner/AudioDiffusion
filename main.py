@@ -7,14 +7,21 @@ from dataloader import AudioDataset
 from model import UNet
 import datetime
 import pickle as pkl
+import os
 
 
 def save_model(model):
     # save the model with a timestamp
+    if not os.path.exists('trained_models'):
+        os.makedirs('trained_models')
+
+    # get the time now
     time_now = datetime.datetime.now()
     time_now = time_now.strftime("%d_%b_%H%M")
-    pkl.dump(model.to(torch.device('cpu')), open(
-        f"trained_models/portal_chamber_{time_now}.p", "wb"))
+
+    # save the model
+    filename = f"trained_models/portal_chamber_{time_now}.p"
+    pkl.dump(model.to(torch.device('cpu')), open(filename, "wb"))
 
 
 def train_network(model, train_loader, num_epochs, optimizer, loss_func):
