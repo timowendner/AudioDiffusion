@@ -12,7 +12,7 @@ import glob
 class AudioDataset(Dataset):
     def __init__(self, file_path: str, device: torch.device, sample_rate=32768):
         files = glob.glob(os.path.join(
-            file_path, "**", "*.wav"), recursive=True)
+            file_path, "**", "*.wav"), recursive=True)[:10]
 
         waveforms = []
         for path in files:
