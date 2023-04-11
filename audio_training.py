@@ -57,3 +57,6 @@ def gen_audio(model):
     noise = torch.randn(16, 1, 2**18)  # [batch_size, in_channels, length]
     sample = model.sample(noise, num_steps=10)  # Suggested num_steps 10-100
     return sample
+
+
+train_model('/Users/timowendner/Programming/AudioDiffusion/Data')
