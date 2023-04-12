@@ -20,7 +20,7 @@ def save_model(model):
     time_now = time_now.strftime("%d_%b_%H%M")
 
     # save the model
-    filepath = f"trained_models/portal_chamber_{time_now}.p"
+    filepath = f"/content/drive/MyDrive/AudioDiffusionModels/portal_chamber_{time_now}.p"
     torch.save(model.state_dict(), filepath)
 
 
