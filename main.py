@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
-import sounddevice as sd
+# import sounddevice as sd
 
 from dataloader import AudioDataset
 from model import UNet
