@@ -17,6 +17,7 @@ class Diffusion:
             return x
         x_t = torch.sqrt(self.alpha_hat[t]) * x \
             + torch.sqrt(1 - self.alpha_hat[t]) * torch.randn_like(x)
+        x_t = x_t.clamp(-1, 1)
         return x_t
 
     def sample(self, model, n):

@@ -2,7 +2,6 @@ import numpy as np
 import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
-# import sounddevice as sd
 
 from dataloader import AudioDataset
 from model import UNet
@@ -45,7 +44,7 @@ def train_network(model, train_loader, num_epochs, optimizer, loss_func):
             if (i + 1) % 10 == 0:
                 print(
                     f'Epoch [{epoch + 1}/{num_epochs}], Step [{i + 1}/{total_step}], Loss: {loss.item():.4f}')
-        if epoch % 4 == 0:
+        if epoch % 10 == 0 or epoch == num_epochs - 1:
             save_model(model)
 
         # test the model and plot a example image
@@ -56,14 +55,16 @@ def train_network(model, train_loader, num_epochs, optimizer, loss_func):
 def main():
     # load the files
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    file_path = '/content/drive/MyDrive/Data/DogBark'
-    # file_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
+    # file_path = '/content/drive/MyDrive/Data/DogBark'
+    file_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
     dataset = AudioDataset(file_path, device)
 
-    # # Play the first audio
-    # audiofile = dataset[0][0].numpy()[0, :]
-    # sd.play(audiofile, samplerate=22050)
-    # sd.wait()
+    # Play the first audio
+    import sounddevice as sd
+    audiofile = dataset[0][0].numpy()[0, :]
+    print(audiofile.shape)
+    sd.play(audiofile, samplerate=22050)
+    sd.wait()
 
     # create the dataloaders
     train_loader = DataLoader(dataset, batch_size=16,
@@ -71,6 +72,7 @@ def main():
 
     # create the model
     model = UNet().to(device)
+
     loss_func = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001,)
     num_epochs = 100
