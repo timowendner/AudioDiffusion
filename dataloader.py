@@ -62,6 +62,7 @@ class AudioDataset(Dataset):
         x_target = self.diffusion.noise(waveform, t)
 
         # normalize the data
+
         # model_input = model_input * 0.98 / torch.max(model_input)
         # target = target * 0.98 / torch.max(target)
 
