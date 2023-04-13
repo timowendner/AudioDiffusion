@@ -55,18 +55,18 @@ def train_network(model, train_loader, num_epochs, optimizer, loss_func):
 def main():
     # load the files
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    # file_path = '/content/drive/MyDrive/Data/DogBark'
-    file_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
+    file_path = '/content/drive/MyDrive/Data/DogBark'
+    # file_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
     dataset = AudioDataset(file_path, device)
 
-    # Play the first audio
-    import sounddevice as sd
-    audiofile = dataset[0][0].numpy()[0, :]
-    print(audiofile.shape)
-    sd.play(audiofile, samplerate=22050)
-    sd.wait()
+    # # Play the first audio
+    # import sounddevice as sd
+    # audiofile = dataset[0][0].numpy()[0, :]
+    # print(audiofile.shape)
+    # sd.play(audiofile, samplerate=22050)
+    # sd.wait()
 
-    # create the dataloaders
+    # create the dataloader
     train_loader = DataLoader(dataset, batch_size=16,
                               shuffle=True, num_workers=0)
 
