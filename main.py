@@ -60,6 +60,8 @@ def main():
     file_path = '/content/drive/MyDrive/Data/DogBark'
     # file_path = '/Users/timowendner/Programming/Semester 4/Malach23/malach23-pipeline-main/datasets/example_data/audio'
     dataset = AudioDataset(file_path, device)
+    # play a test audio
+    Audio(dataset[0], rate=22050, autoplay=False)
 
     # create the dataloaders
     train_loader = DataLoader(dataset, batch_size=16,
@@ -70,9 +72,6 @@ def main():
     loss_func = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001,)
     num_epochs = 100
-
-    # play a test audio
-    Audio(dataset.cpu()[0], rate=22050, autoplay=False)
 
     # train the network
     # train_network(model, train_loader, num_epochs, optimizer, loss_func)
