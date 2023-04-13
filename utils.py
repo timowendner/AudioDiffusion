@@ -7,7 +7,7 @@ from IPython.display import Image, Audio
 from torch.utils.data import Dataset, DataLoader
 import os
 import glob
-from diffusion import Diffusion
+from .diffusion import Diffusion
 
 
 def playAudio(waveform):
