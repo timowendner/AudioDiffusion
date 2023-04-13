@@ -2,6 +2,7 @@ import numpy as np
 import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
+from IPython.display import Image, Audio
 
 from dataloader import AudioDataset
 from model import UNet
@@ -69,6 +70,9 @@ def main():
     loss_func = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001,)
     num_epochs = 100
+
+    # play a test audio
+    Audio(dataset[0], rate=22050, autoplay=False)
 
     # train the network
     # train_network(model, train_loader, num_epochs, optimizer, loss_func)
