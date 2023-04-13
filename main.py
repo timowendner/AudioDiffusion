@@ -61,6 +61,7 @@ def main():
     # file_path = '/Users/timowendner/Programming/Semester 4/Malach23/malach23-pipeline-main/datasets/example_data/audio'
     dataset = AudioDataset(file_path, device)
     # play a test audio
+    print(dataset[0][0].cpu())
     Audio(dataset[0][0].cpu(), rate=22050, autoplay=False)
 
     # create the dataloaders
