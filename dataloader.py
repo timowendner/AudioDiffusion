@@ -10,7 +10,7 @@ import glob
 
 
 class AudioDataset(Dataset):
-    def __init__(self, file_path: str, device: torch.device, sample_rate=32768):
+    def __init__(self, file_path: str, device: torch.device, length=88200, sample_rate=22050):
         files = glob.glob(os.path.join(
             file_path, "**", "*.wav"), recursive=True)
 
@@ -23,6 +23,7 @@ class AudioDataset(Dataset):
         self.waveforms = torch.stack(waveforms)
         self.sample_rate = sample_rate
         self.device = device
+        self.length = length
 
     def __len__(self):
         return len(self.waveforms)
@@ -31,8 +32,8 @@ class AudioDataset(Dataset):
         waveform = self.waveforms[idx]
         sr = self.sample_rate
 
-        # specify the probabilities of the data augmentation
-        eq_probability = 0.3
+        # # specify the probabilities of the data augmentation
+        # eq_probability = 0.3
 
         # Apply EQ
         # freq_bands = (20, 60, 100, 250, 400, 630, 900, 1200, 1600, 2000, 2500,
