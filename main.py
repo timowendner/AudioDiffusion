@@ -72,7 +72,7 @@ def main():
     num_epochs = 100
 
     # play a test audio
-    Audio(dataset[0], rate=22050, autoplay=False)
+    Audio(dataset.cpu()[0], rate=22050, autoplay=False)
 
     # train the network
     # train_network(model, train_loader, num_epochs, optimizer, loss_func)
