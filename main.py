@@ -57,6 +57,7 @@ def main():
     # load the files
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     file_path = '/content/drive/MyDrive/Data/DogBark'
+    # file_path = '/Users/timowendner/Programming/Semester 4/Malach23/malach23-pipeline-main/datasets/example_data/audio'
     dataset = AudioDataset(file_path, device)
 
     # create the dataloaders
@@ -70,7 +71,7 @@ def main():
     num_epochs = 100
 
     # train the network
-    train_network(model, train_loader, num_epochs, optimizer, loss_func)
+    # train_network(model, train_loader, num_epochs, optimizer, loss_func)
 
     # # Define loss function and optimizer
     # criterion = torch.nn.MSELoss()

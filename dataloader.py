@@ -7,6 +7,7 @@ from IPython.display import Image, Audio
 from torch.utils.data import Dataset, DataLoader
 import os
 import glob
+from diffusion import Diffusion
 
 
 class AudioDataset(Dataset):
@@ -24,6 +25,7 @@ class AudioDataset(Dataset):
         self.sample_rate = sample_rate
         self.device = device
         self.length = length
+        self.diffusion = Diffusion(length=length)
 
     def __len__(self):
         return len(self.waveforms)
@@ -55,12 +57,9 @@ class AudioDataset(Dataset):
         waveform = torch.roll(waveform, int(start))
 
         # create the diffusion
-        r = (torch.rand(1,) ** 2) * 4
-        noise = (torch.rand(waveform.shape,) * 2 - 1) * r
-        model_input = waveform + noise
-        noise = (torch.rand(waveform.shape,)
-                 * 2 - 1) * torch.clamp(r - 0.5, min=0)
-        target = waveform + noise
+        t = np.random.randint(1, 1000)
+        x_input = self.diffusion.noise(waveform, t-1)
+        x_target = self.diffusion.noise(waveform, t)
 
         # normalize the data
         model_input = model_input * 0.98 / torch.max(model_input)

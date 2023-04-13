@@ -1,12 +1,4 @@
 import torch
-import torchaudio
-import torchaudio.transforms as T
-import torchaudio.functional as F
-import numpy as np
-from IPython.display import Image, Audio
-from torch.utils.data import Dataset, DataLoader
-import os
-import glob
 
 
 class Diffusion:
@@ -21,6 +13,8 @@ class Diffusion:
         self.alpha_hat = torch.cumprod(self.alpha, dim=0)
 
     def noise(self, x, t):
+        if t == 0:
+            return x
         x_t = torch.sqrt(self.alpha_hat[t]) * x \
             + torch.sqrt(1 - self.alpha_hat[t]) * torch.randn_like(x)
         return x_t
@@ -39,12 +33,9 @@ class Diffusion:
                     noise = torch.randn_like(x)
                 else:
                     noise = torch.zeros_like(x)
-                x = 1 / torch.sqrt(alpha) * (x - ((1 - alpha) / (torch.sqrt(1 - alpha_hat)))
-                                             * predicted_noise) + torch.sqrt(beta) * noise
+                x = 1 / torch.sqrt(alpha) \
+                    * (x - ((1 - alpha) / (torch.sqrt(1 - alpha_hat)))
+                       * predicted_noise) + torch.sqrt(beta) * noise
         model.train()
         x = x.clamp(-1, 1)
         return x
-
-
-d = Diffusion()
-print(d.alpha_hat)
