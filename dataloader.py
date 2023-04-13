@@ -50,7 +50,7 @@ class AudioDataset(Dataset):
         #     )
 
         # Apply gain
-        # waveform = waveform * (1 - torch.rand(1,) ** 4)
+        waveform = waveform * (1 - torch.clamp(torch.rand(1,) ** 4, min=0.4))
 
         # create a different starting point and roll the data over
         start = torch.randint(waveform.shape[1], size=(1,))

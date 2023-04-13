@@ -2,12 +2,11 @@ import numpy as np
 import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
-from IPython.display import Image, Audio
+import sounddevice as sd
 
 from dataloader import AudioDataset
 from model import UNet
 import datetime
-import pickle as pkl
 import os
 
 
@@ -21,7 +20,7 @@ def save_model(model):
     time_now = time_now.strftime("%d_%b_%H%M")
 
     # save the model
-    filepath = f"/content/drive/MyDrive/AudioDiffusionModels/portal_chamber_{time_now}.p"
+    filepath = f"/content/drive/MyDrive/AudioDiffusionModels/testchamber_{time_now}.p"
     torch.save(model.state_dict(), filepath)
 
 
@@ -57,12 +56,14 @@ def train_network(model, train_loader, num_epochs, optimizer, loss_func):
 def main():
     # load the files
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    file_path = '/content/drive/MyDrive/Data/DogBark'
-    # file_path = '/Users/timowendner/Programming/Semester 4/Malach23/malach23-pipeline-main/datasets/example_data/audio'
+    # file_path = '/content/drive/MyDrive/Data/DogBark'
+    file_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
     dataset = AudioDataset(file_path, device)
-    # play a test audio
-    print(dataset[0][0].cpu())
-    Audio(dataset[0][0].cpu(), rate=22050, autoplay=False)
+
+    # # Play the first audio
+    # audiofile = dataset[0][0].numpy()[0, :]
+    # sd.play(audiofile, samplerate=22050)
+    # sd.wait()
 
     # create the dataloaders
     train_loader = DataLoader(dataset, batch_size=16,
@@ -75,15 +76,7 @@ def main():
     num_epochs = 100
 
     # train the network
-    # train_network(model, train_loader, num_epochs, optimizer, loss_func)
-
-    # # Define loss function and optimizer
-    # criterion = torch.nn.MSELoss()
-    # # optimizer = torch.optim.Adam(model.parameters(), lr=0.001) # , weight_decay=0.00001
-
-    # data = dataset[0]
-    # print(len(data[0][0]), torch.max(data[1]))
-    # Audio(data[0], rate=22050, autoplay=False)
+    train_network(model, train_loader, num_epochs, optimizer, loss_func)
 
 
 if __name__ == '__main__':
