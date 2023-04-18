@@ -44,8 +44,9 @@ def up(in_channel, out_channel, pad=0):
 
 
 class UNet(nn.Module):
-    def __init__(self):
+    def __init__(self, device):
         super(UNet, self).__init__()
+        self.device = device
 
         self.down1 = dual(1, 32)
         self.down2 = dual(32, 64)

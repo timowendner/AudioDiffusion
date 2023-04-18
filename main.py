@@ -81,7 +81,7 @@ def main():
                               shuffle=True, num_workers=0)
 
     # create the model
-    model = UNet().to(device)
+    model = UNet(device).to(device)
 
     num_epochs = 100
 
