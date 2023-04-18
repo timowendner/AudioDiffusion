@@ -29,7 +29,8 @@ def train_network(model, train_loader, num_epochs, optimizer, loss_func):
     total_step = len(train_loader)
 
     for epoch in range(num_epochs):
-        print(f"Start Epoch: {epoch + 1}/{num_epochs}")
+        time_now = time_now.strftime("%H%M")
+        print(f"Start Epoch: {epoch + 1}/{num_epochs}   {time_now}")
         for i, (model_input, targets) in enumerate(train_loader):
             # Forward pass
             outputs = model(model_input)

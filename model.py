@@ -25,6 +25,10 @@ def up(in_channel, out_channel, pad=0):
     )
 
 
+def sinusoidal(length: int,  label: int):
+    pass
+
+
 class UNet(nn.Module):
     def __init__(self):
         super(UNet, self).__init__()
