@@ -35,7 +35,7 @@ class Diffusion(nn.Module):
         model.eval()
         with torch.no_grad():
             # create a noise array that we want to denoise
-            x = torch.randn(n, 1, self.length, device=model.device)
+            x = torch.randn(n.shape[0], 1, self.length, device=model.device)
             # l = torch.ones(n, device=model.device) * label
 
             # loop through all timesteps
