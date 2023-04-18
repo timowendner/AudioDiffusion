@@ -65,4 +65,4 @@ class AudioDataset(Dataset):
         # model_input = model_input * 0.98 / torch.max(model_input)
         # target = target * 0.98 / torch.max(target)
 
-        return x_t.to(self.device), noise.to(self.device)
+        return x_t.to(self.device), noise.to(self.device), t
