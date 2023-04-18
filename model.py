@@ -5,15 +5,15 @@ from torch import sin, cos, pow
 
 
 class Sinusoidal(nn.Module):
-    def __init__(self):
+    def __init__(self, device):
         super(Sinusoidal, self).__init__()
-        # self.device = device
+        self.device = device
 
     def forward(self, length: int, position: torch.Tensor) -> torch.Tensor:
         n = position.shape[0]
-        values = torch.arange(length).unsqueeze(
+        values = torch.arange(length, device=self.device).unsqueeze(
             0).unsqueeze(0).expand(n, 1, -1)
-        output = torch.zeros_like(values)
+        output = torch.zeros_like(values, device=self.device)
         position = position.view(-1, 1, 1)
 
         output[:, :, ::2] = sin(
@@ -50,7 +50,7 @@ class UNet(nn.Module):
     def __init__(self, device):
         super(UNet, self).__init__()
         self.device = device
-        self.sinusoidal = Sinusoidal()
+        self.sinusoidal = Sinusoidal(device)
 
         self.down1 = dual(1, 32)
         self.down2 = dual(32, 64)
@@ -72,7 +72,8 @@ class UNet(nn.Module):
 
     def forward(self, x: torch.Tensor, timestamp: int, label: int) -> torch.Tensor:
         label *= 100
-        label = torch.empty(timestamp.shape[0]).fill_(label)
+        label = torch.empty(
+            timestamp.shape[0], device=self.device).fill_(label)
 
         t1 = self.sinusoidal(88200, timestamp)
         t2 = self.sinusoidal(22050, timestamp)
