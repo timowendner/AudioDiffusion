@@ -86,22 +86,21 @@ def main():
     # train the network
     # train_network(model, train_loader, num_epochs, diffusion)
 
-    # # create new samples
-    # outputpath = '/content/drive/MyDrive/AudioDiffusion/output'
-    # modelpath = '/content/drive/MyDrive/AudioDiffusionModels/testchamber_18_Apr_2211.p'
+    # create new samples
+    outputpath = '/content/drive/MyDrive/AudioDiffusion/output'
+    modelpath = '/content/drive/MyDrive/AudioDiffusionModels/testchamber_18_Apr_2211.p'
 
-    # model.load_state_dict(torch.load(modelpath, map_location=device))
+    model.load_state_dict(torch.load(modelpath, map_location=device))
 
-    # # create a new datapoint
-    # timestamps = torch.ones(16, device=device) * 16
-    # x = diffusion.sample(model, 1, 1)
-    # # save the data to a pickle file
-    # with open('data.pkl', 'wb') as f:
-    #     pkl.dump(data, f)
+    # create a new datapoint
+    x = diffusion.sample(16, 1)
+    # save the data to a pickle file
+    with open('data.pkl', 'wb') as f:
+        pkl.dump(x, f)
 
-    # # load the data from the pickle file
-    # with open('data.pkl', 'rb') as f:
-    #     loaded_data = pkl.load(f)
+    # load the data from the pickle file
+    with open('data.pkl', 'rb') as f:
+        loaded_data = pkl.load(f)
 
 
 if __name__ == '__main__':
