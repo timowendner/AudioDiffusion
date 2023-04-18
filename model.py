@@ -71,20 +71,20 @@ class UNet(nn.Module):
         )
 
     def forward(self, x: torch.Tensor, timestamp: int, label: int) -> torch.Tensor:
-        n = x.shape[0]
         label *= 100
+        label = torch.empty(timestamp.shape[0]).fill_(label)
 
-        t1 = self.sinusoidal(88200, n, timestamp)
-        t2 = self.sinusoidal(22050, n, timestamp)
-        t3 = self.sinusoidal(5512, n, timestamp)
-        t4 = self.sinusoidal(1378, n, timestamp)
-        t5 = self.sinusoidal(344, n, timestamp)
+        t1 = self.sinusoidal(88200, timestamp)
+        t2 = self.sinusoidal(22050, timestamp)
+        t3 = self.sinusoidal(5512, timestamp)
+        t4 = self.sinusoidal(1378, timestamp)
+        t5 = self.sinusoidal(344, timestamp)
 
-        l1 = self.sinusoidal(88200, n, label)
-        l2 = self.sinusoidal(22050, n, label)
-        l3 = self.sinusoidal(5512, n, label)
-        l4 = self.sinusoidal(1378, n, label)
-        l5 = self.sinusoidal(344, n, label)
+        l1 = self.sinusoidal(88200, label)
+        l2 = self.sinusoidal(22050, label)
+        l3 = self.sinusoidal(5512, label)
+        l4 = self.sinusoidal(1378, label)
+        l5 = self.sinusoidal(344, label)
 
         x1 = self.down1(torch.cat([t1, l1, x], 1))
         x2 = self.down2(torch.cat([t2, l2, self.pool(x1)], 1))
