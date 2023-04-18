@@ -92,9 +92,8 @@ class UNet(nn.Module):
         x2 = self.down2(torch.cat([t2, l2, self.pool(x1)], 1))
         x3 = self.down3(torch.cat([t3, l3, self.pool(x2)], 1))
         x4 = self.down4(torch.cat([t4, l4, self.pool(x3)], 1))
-        print(timestamp, label, x4.shape)
 
-        out = self.up4(torch.cat([t5, l5, self.pool(x4), 1]))
+        out = self.up4(torch.cat([t5, l5, self.pool(x4)], 1))
         out = self.up3(torch.cat([t4, l4, out, x4], 1))
         out = self.up2(torch.cat([t3, l3, out, x3], 1))
         out = self.up1(torch.cat([t2, l2, out, x2], 1))
