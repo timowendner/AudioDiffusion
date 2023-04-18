@@ -42,23 +42,24 @@ class Diffusion:
         model.eval()
         with torch.no_grad():
             # create a noise array that we want to denoise
-            x = torch.randn((n, self.length)).to(model.device)
+            x = torch.randn((n, 1, self.length), device=model.device)
+            # l = torch.ones(n, device=model.device) * label
 
             # loop through all timesteps
-            for t in reversed(range(1, self.steps)):
-                # t = (torch.ones(n) * i).long().to(model.device)
+            for i in reversed(range(1, self.steps)):
+                t = torch.ones(n, device=model.device) * i
                 predicted_noise = model(x, t, label)
                 alpha = self.alpha[t]
                 alpha_hat = self.alpha_hat[t]
                 beta = self.beta[t]
-                if t > 1:
+                if i > 1:
                     noise = torch.randn_like(x)
                 else:
                     noise = torch.zeros_like(x)
                 x = 1 / sqrt(alpha) * (x - ((1 - alpha) / (sqrt(1 - alpha_hat)))
                                        * predicted_noise) + sqrt(beta) * noise
+                x = x.clamp(-1, 1)
         model.train()
-        x = x.clamp(-1, 1)
         return x
 
     def loss(self, x0: torch.Tensor, noise: torch.Tensor = None):
