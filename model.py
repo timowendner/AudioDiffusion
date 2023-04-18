@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 import numpy as np
-from torch import sin, cos, pow
+from torch import sin, cos, pow, Tensor
 
 
 class Sinusoidal(nn.Module):
@@ -70,10 +70,9 @@ class UNet(nn.Module):
             nn.Conv1d(32, 1, kernel_size=9, padding=4),
         )
 
-    def forward(self, x: torch.Tensor, timestamp: int, label: int) -> torch.Tensor:
-        label *= 100
-        label = torch.empty(
-            timestamp.shape[0], device=self.device).fill_(label)
+    def forward(self, x: Tensor, timestamp: Tensor, label: Tensor) -> Tensor:
+        label = torch.ones(
+            timestamp.shape[0], device=self.device) * label * 100
         timestamp = timestamp.to(self.device)
 
         t1 = self.sinusoidal(88200, timestamp)

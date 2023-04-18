@@ -47,7 +47,7 @@ class Diffusion:
 
             # loop through all timesteps
             for i in reversed(range(1, self.steps)):
-                t = torch.ones(n, device=model.device) * i
+                t = torch.ones(n) * i
                 predicted_noise = model(x, t, label)
                 alpha = self.alpha[t]
                 alpha_hat = self.alpha_hat[t]
