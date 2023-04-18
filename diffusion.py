@@ -1,4 +1,6 @@
 import torch
+import torch.functional as F
+from torch import sqrt
 
 
 class Diffusion:
@@ -13,30 +15,58 @@ class Diffusion:
         self.alpha_hat = torch.cumprod(self.alpha, dim=0)
 
     def noise(self, x, t):
-        if t == 0:
-            return x
-        x_t = torch.sqrt(self.alpha_hat[t]) * x \
-            + torch.sqrt(1 - self.alpha_hat[t]) * torch.randn_like(x)
-        x_t = x_t.clamp(-1, 1)
-        return x_t
+        """Compute the noise of the Diffusion model
 
-    def sample(self, model, n):
+        Args:
+            x (torch.Tensor): input tensor of the current audio-file
+            t (int): timestamp of the diffusion
+
+        Returns:
+            tuple (torch.Tensor, torch.Tensor):
+                - noise version of the audio-file
+                - the added noise
+        """
+        # if the timestamp is 0 then return a noise-free version
+        if t == 0:
+            return x, torch.zeros_like(x)
+
+        # create the noise and compute the noise audio-file
+        noise = torch.randn_like(x)
+        x_t = sqrt(self.alpha_hat[t]) * x + sqrt(1 - self.alpha_hat[t]) * noise
+
+        # clamp the tensor and compute the noise distribution
+        x_t = x_t.clamp(-1, 1)
+        return x_t, x_t - x
+
+    def sample(self, model, n: int, label: int):
         model.eval()
         with torch.no_grad():
+            # create a noise array that we want to denoise
             x = torch.randn((n, self.length)).to(model.device)
-            for i in reversed(range(1, self.steps)):
-                t = (torch.ones(n) * i).long().to(model.device)
-                predicted_noise = model(x, t)
+
+            # loop through all timesteps
+            for t in reversed(range(1, self.steps)):
+                # t = (torch.ones(n) * i).long().to(model.device)
+                predicted_noise = model(x, t, label)
                 alpha = self.alpha[t]
                 alpha_hat = self.alpha_hat[t]
                 beta = self.beta[t]
-                if i > 1:
+                if t > 1:
                     noise = torch.randn_like(x)
                 else:
                     noise = torch.zeros_like(x)
-                x = 1 / torch.sqrt(alpha) \
-                    * (x - ((1 - alpha) / (torch.sqrt(1 - alpha_hat)))
-                       * predicted_noise) + torch.sqrt(beta) * noise
+                x = 1 / sqrt(alpha) * (x - ((1 - alpha) / (sqrt(1 - alpha_hat)))
+                                       * predicted_noise) + sqrt(beta) * noise
         model.train()
         x = x.clamp(-1, 1)
         return x
+
+    def loss(self, x0: torch.Tensor, noise: torch.Tensor = None):
+        batch_size = x0.shape[0]
+        t = torch.randint(0, self.n_steps, (batch_size,),
+                          device=x0.device)
+        if noise is None:
+            noise = torch.randn_like(x0)
+        xt = self.q_sample(x0, t, eps=noise)
+        eps_theta = self.eps_model(xt, t)
+        return F.mse_loss(noise, eps_theta)

@@ -7,6 +7,7 @@ from dataloader import AudioDataset
 from model import UNet
 import datetime
 import os
+from diffusion import Diffusion
 
 
 def save_model(model):
@@ -23,18 +24,24 @@ def save_model(model):
     torch.save(model.state_dict(), filepath)
 
 
-def train_network(model, train_loader, num_epochs, optimizer, loss_func):
+def train_network(model, train_loader, num_epochs, diffusion):
     # Train the model
     model.train()
     total_step = len(train_loader)
+    mse = torch.nn.MSELoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
     for epoch in range(num_epochs):
-        time_now = time_now.strftime("%H%M")
+        # print the epoch and current time
+        time_now = datetime.datetime.now()
+        time_now = time_now.strftime("%H:%M")
         print(f"Start Epoch: {epoch + 1}/{num_epochs}   {time_now}")
+
+        # loop through the training loader
         for i, (model_input, targets) in enumerate(train_loader):
             # Forward pass
             outputs = model(model_input)
-            loss = loss_func(outputs, targets)
+            loss = mse(outputs, targets)
 
             # calculate gradients
             optimizer.zero_grad()
@@ -43,8 +50,9 @@ def train_network(model, train_loader, num_epochs, optimizer, loss_func):
             # nn.utils.clip_grad_norm_(model.parameters(), 0.001)
 
             if (i + 1) % 10 == 0:
-                print(
-                    f'Epoch [{epoch + 1}/{num_epochs}], Step [{i + 1}/{total_step}], Loss: {loss.item():.4f}')
+                print(f'Epoch [{epoch + 1}/{num_epochs}]',
+                      f'Step [{i + 1}/{total_step}]',
+                      f'Loss: {loss.item():.4f}')
         if epoch % 10 == 0 or epoch == num_epochs - 1:
             save_model(model)
 
@@ -56,9 +64,10 @@ def train_network(model, train_loader, num_epochs, optimizer, loss_func):
 def main():
     # load the files
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    diffusion = Diffusion(length=88200)
     file_path = '/content/drive/MyDrive/Data/DogBark'
     # file_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
-    dataset = AudioDataset(file_path, device)
+    dataset = AudioDataset(file_path, device,  diffusion)
 
     # # Play the first audio
     # import sounddevice as sd
@@ -74,12 +83,10 @@ def main():
     # create the model
     model = UNet().to(device)
 
-    loss_func = torch.nn.MSELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001,)
     num_epochs = 100
 
     # train the network
-    train_network(model, train_loader, num_epochs, optimizer, loss_func)
+    train_network(model, train_loader, num_epochs, diffusion)
 
 
 if __name__ == '__main__':

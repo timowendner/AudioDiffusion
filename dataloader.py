@@ -11,7 +11,7 @@ from diffusion import Diffusion
 
 
 class AudioDataset(Dataset):
-    def __init__(self, file_path: str, device: torch.device, length=88200, sample_rate=22050):
+    def __init__(self, file_path: str, device: torch.device, diffusion: Diffusion, length=88200, sample_rate=22050, ):
         files = glob.glob(os.path.join(
             file_path, "**", "*.wav"), recursive=True)
 
@@ -25,7 +25,7 @@ class AudioDataset(Dataset):
         self.sample_rate = sample_rate
         self.device = device
         self.length = length
-        self.diffusion = Diffusion(length=length)
+        self.diffusion = diffusion
 
     def __len__(self):
         return len(self.waveforms)
@@ -58,12 +58,11 @@ class AudioDataset(Dataset):
 
         # create the diffusion
         t = np.random.randint(1, 1000)
-        x_input = self.diffusion.noise(waveform, t-1)
-        x_target = self.diffusion.noise(waveform, t)
+        x_t, noise = self.diffusion.noise(waveform, t)
 
         # normalize the data
 
         # model_input = model_input * 0.98 / torch.max(model_input)
         # target = target * 0.98 / torch.max(target)
 
-        return x_input.to(self.device), x_target.to(self.device)
+        return x_t.to(self.device), noise.to(self.device)
