@@ -53,7 +53,7 @@ class Diffusion(nn.Module):
                 noise = torch.randn_like(x)
             else:
                 noise = torch.zeros_like(x)
-            # print(alpha.shape, beta.shape, t.shape, x.shape)
+            print(alpha.shape, beta.shape, t.shape, x.shape)
             x = 1 / sqrt(alpha) * (x - ((1 - alpha) / (sqrt(1 - alpha_hat)))
                                    * predicted_noise) + sqrt(beta) * noise
             x = x.clamp(-1, 1)
