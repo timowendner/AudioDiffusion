@@ -32,9 +32,8 @@ class Diffusion(nn.Module):
         x_t = x_t.clamp(-1, 1)
         return x_t, x_t - x
 
-    def sample(self, model, n: int, label: int):
-        n = 16
-        print(n)
+    def sample(self, n: int, label: int):
+        model = self.model
         model.eval()
 
         # create a noise array that we want to denoise
