@@ -5,9 +5,9 @@ from torch import sin, cos, pow
 
 
 class Sinusoidal(nn.Module):
-    def __init__(self, device):
+    def __init__(self):
         super(Sinusoidal, self).__init__()
-        self.device = device
+        # self.device = device
 
     def forward(self, length: int, position: torch.Tensor) -> torch.Tensor:
         n = position.shape[0]
@@ -50,7 +50,7 @@ class UNet(nn.Module):
     def __init__(self, device):
         super(UNet, self).__init__()
         self.device = device
-        self.sinusoidal = Sinu
+        self.sinusoidal = Sinusoidal()
 
         self.down1 = dual(1, 32)
         self.down2 = dual(32, 64)
