@@ -11,8 +11,8 @@ class Sinusoidal(nn.Module):
 
 
 def Sinu(length: int, n: int, position: int) -> torch.Tensor:
-    values = torch.arange(length)
-    output = torch.zeros_like(values)
+    values = torch.arange(length).float()
+    output = torch.zeros_like(values).float()
     # print(length, n, position, values, output)
     print(values[::2].shape, output[::2].shape)
     print(values.shape, output.shape)
