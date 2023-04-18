@@ -37,6 +37,9 @@ class Diffusion(nn.Module):
         print(n)
         model.eval()
         with torch.no_grad():
+            x = torch.randn(n, 1, self.length, device=model.device)
+
+        with torch.no_grad():
             # create a noise array that we want to denoise
             x = torch.randn(n, 1, self.length, device=model.device)
             # l = torch.ones(n, device=model.device) * label
