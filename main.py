@@ -64,24 +64,21 @@ def train_network(model, train_loader, num_epochs, diffusion):
 def main():
     # load the files
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    diffusion = Diffusion(length=88200).to(device)
     file_path = '/content/drive/MyDrive/Data/DogBark'
     # file_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
-    dataset = AudioDataset(file_path, device,  diffusion)
 
+    # create the model and the dataloader
+    model = UNet(device).to(device)
+    diffusion = Diffusion(model, length=88200)
+    dataset = AudioDataset(file_path, device,  diffusion)
+    train_loader = DataLoader(dataset, batch_size=16,
+                              shuffle=True, num_workers=0)
     # # Play the first audio
     # import sounddevice as sd
     # audiofile = dataset[0][0].numpy()[0, :]
     # print(audiofile.shape)
     # sd.play(audiofile, samplerate=22050)
     # sd.wait()
-
-    # create the dataloader
-    train_loader = DataLoader(dataset, batch_size=16,
-                              shuffle=True, num_workers=0)
-
-    # create the model
-    model = UNet(device).to(device)
 
     num_epochs = 100
 
