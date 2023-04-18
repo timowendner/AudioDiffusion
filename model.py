@@ -11,6 +11,7 @@ class Sinusoidal(nn.Module):
     def forward(self, length: int, n: int, position: int) -> torch.Tensor:
         values = torch.arange(length)
         output = torch.zeros(length)
+        print(length, n, position, values, output)
         output[::2] = torch.sin(
             position / torch.pow(1000, values[::2] / length))
         output[1::2] = torch.cos(
@@ -48,6 +49,7 @@ class UNet(nn.Module):
     def __init__(self, device):
         super(UNet, self).__init__()
         self.device = device
+        self.sinusoidal = Sinusoidal(device)
 
         self.down1 = dual(1, 32)
         self.down2 = dual(32, 64)
@@ -71,18 +73,17 @@ class UNet(nn.Module):
         n = x.shape[0]
         label *= 100
 
-        embedding = Sinusoidal(self.device)
-        t1 = embedding(88200, n, timestamp)
-        t2 = embedding(22050, n, timestamp)
-        t3 = embedding(5512, n, timestamp)
-        t4 = embedding(1378, n, timestamp)
-        t5 = embedding(344, n, timestamp)
+        t1 = self.sinusoidal(88200, n, timestamp)
+        t2 = self.sinusoidal(22050, n, timestamp)
+        t3 = self.sinusoidal(5512, n, timestamp)
+        t4 = self.sinusoidal(1378, n, timestamp)
+        t5 = self.sinusoidal(344, n, timestamp)
 
-        l1 = embedding(88200, n, label)
-        l2 = embedding(22050, n, label)
-        l3 = embedding(5512, n, label)
-        l4 = embedding(1378, n, label)
-        l5 = embedding(344, n, label)
+        l1 = self.sinusoidal(88200, n, label)
+        l2 = self.sinusoidal(22050, n, label)
+        l3 = self.sinusoidal(5512, n, label)
+        l4 = self.sinusoidal(1378, n, label)
+        l5 = self.sinusoidal(344, n, label)
 
         x1 = self.down1(torch.cat([t1, l1, x], 1))
         x2 = self.down2(torch.cat([t2, l2, self.pool(x1)], 1))
