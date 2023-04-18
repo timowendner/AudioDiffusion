@@ -10,8 +10,8 @@ class Sinusoidal(nn.Module):
 
     def forward(self, length: int, n: int, position: int) -> torch.Tensor:
         values = torch.arange(length)
-        output = torch.zeros(length)
-        print(length, n, position, values, output)
+        output = torch.zeros_like(values)
+        # print(length, n, position, values, output)
         output[::2] = torch.sin(
             position / torch.pow(1000, values[::2] / length))
         output[1::2] = torch.cos(
