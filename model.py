@@ -9,25 +9,18 @@ class Sinusoidal(nn.Module):
         super(Sinusoidal, self).__init__()
         self.device = device
 
+    def forward(self, length: int, position: torch.array) -> torch.Tensor:
+        n = position.shape[0]
+        values = torch.arange(length).unsqueeze(
+            0).unsqueeze(0).expand(n, 1, -1)
+        output = torch.zeros_like(values)
+        position = position.view(-1, 1, 1)
 
-def Sinu(length: int, n: int, position: int) -> torch.Tensor:
-    values = torch.arange(length)
-    output = torch.zeros_like(values)
-    print(position.shape)
-    # print(length, n, position, values, output)
-    test = values[::2]
-    test = test / length
-    test = pow(1000, test)
-    test = position / test
-    test = sin(test)
-    output[::2] = test
-
-    output[::2] = sin(position / pow(1000, values[::2] / length))
-    output[1::2] = cos(position / pow(1000, values[1::2] / length))
-
-    output = output.unsqueeze(0).unsqueeze(0)
-    output = output.expand(n, 1, -1)
-    return output
+        output[:, :, ::2] = sin(
+            position / pow(1000, values[:, :, ::2] / length))
+        output[:, :, 1::2] = cos(
+            position / pow(1000, values[:, :, 1::2] / length))
+        return output
 
 
 def dual(in_channel, out_channel):
