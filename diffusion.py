@@ -32,6 +32,7 @@ class Diffusion(nn.Module):
         x_t = x_t.clamp(-1, 1)
         return x_t, x_t - x
 
+    @torch.no_grad()
     def sample(self, n: int, label: int):
         model = self.model
         model.eval()
@@ -42,8 +43,7 @@ class Diffusion(nn.Module):
 
         # loop through all timesteps
 
-        for i in torch.arange(1, self.steps, device=model.device)[::-1]:
-            test = torch.ones(n)
+        for i in reversed(range(1, self.steps)):
             t = (torch.ones(n) * i).long().to(model.device)
             alpha = self.alpha[t]
             alpha_hat = self.alpha_hat[t]
