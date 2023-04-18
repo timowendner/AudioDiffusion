@@ -9,7 +9,7 @@ class Sinusoidal(nn.Module):
         self.device = device
 
 
-def Sinu(self, length: int, n: int, position: int) -> torch.Tensor:
+def Sinu(length: int, n: int, position: int) -> torch.Tensor:
     values = torch.arange(length)
     output = torch.zeros_like(values)
     # print(length, n, position, values, output)
