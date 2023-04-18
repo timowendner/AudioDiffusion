@@ -48,10 +48,10 @@ class Diffusion:
             # loop through all timesteps
             for i in reversed(range(1, self.steps)):
                 t = torch.ones(n) * i
-                predicted_noise = model(x, t, label)
                 alpha = self.alpha[t]
                 alpha_hat = self.alpha_hat[t]
                 beta = self.beta[t]
+                predicted_noise = model(x, t, label)
                 if i > 1:
                     noise = torch.randn_like(x)
                 else:
