@@ -32,50 +32,32 @@ class Diffusion(nn.Module):
         x_t = x_t.clamp(-1, 1)
         return x_t, x_t - x
 
+    @torch.no_grad()
     def sample(self, model, n: int, label: int):
         n = 16
         print(n)
         model.eval()
-        with torch.no_grad():
-            x = torch.randn(n, 1, self.length, device=model.device)
-            x = x
-            x = x
-            x = x
-            x = x
-            x = x
-            x = x
-            x = x
-            x = x
-            x = x
-            x = x
-            x = x
-            x = x
-            x = x
-            x = x
-            x = x
-            x = x
 
-        with torch.no_grad():
-            # create a noise array that we want to denoise
-            x = torch.randn(n, 1, self.length, device=model.device)
-            # l = torch.ones(n, device=model.device) * label
+        # create a noise array that we want to denoise
+        x = torch.randn(n, 1, self.length, device=model.device)
+        # l = torch.ones(n, device=model.device) * label
 
-            # loop through all timesteps
+        # loop through all timesteps
 
-            for i in torch.arange(1, self.steps, device=model.device)[::-1]:
-                test = torch.ones(n)
-                t = (torch.ones(n) * i).long().to(model.device)
-                alpha = self.alpha[t]
-                alpha_hat = self.alpha_hat[t]
-                beta = self.beta[t]
-                predicted_noise = model(x, t, label)
-                if i > 1:
-                    noise = torch.randn_like(x)
-                else:
-                    noise = torch.zeros_like(x)
-                x = 1 / sqrt(alpha) * (x - ((1 - alpha) / (sqrt(1 - alpha_hat)))
-                                       * predicted_noise) + sqrt(beta) * noise
-                x = x.clamp(-1, 1)
+        for i in torch.arange(1, self.steps, device=model.device)[::-1]:
+            test = torch.ones(n)
+            t = (torch.ones(n) * i).long().to(model.device)
+            alpha = self.alpha[t]
+            alpha_hat = self.alpha_hat[t]
+            beta = self.beta[t]
+            predicted_noise = model(x, t, label)
+            if i > 1:
+                noise = torch.randn_like(x)
+            else:
+                noise = torch.zeros_like(x)
+            x = 1 / sqrt(alpha) * (x - ((1 - alpha) / (sqrt(1 - alpha_hat)))
+                                   * predicted_noise) + sqrt(beta) * noise
+            x = x.clamp(-1, 1)
         # model.train()
         return x
 
