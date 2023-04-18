@@ -45,9 +45,9 @@ class Diffusion(nn.Module):
 
         for i in reversed(range(1, self.steps)):
             t = (torch.ones(n) * i).long().to(model.device)
-            alpha = self.alpha[t].unsqueeze(0).unsqueeze(0)
-            alpha_hat = self.alpha_hat[t].unsqueeze(0).unsqueeze(0)
-            beta = self.beta[t].unsqueeze(0).unsqueeze(0)
+            alpha = self.alpha[t].view(-1, 1, 1)
+            alpha_hat = self.alpha_hat[t].view(-1, 1, 1)
+            beta = self.beta[t].view(-1, 1, 1)
             predicted_noise = model(x, t, label)
             if i > 1:
                 noise = torch.randn_like(x)
