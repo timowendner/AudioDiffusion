@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+import numpy as np
 
 
 class Sinusoidal(nn.Module):
@@ -8,16 +9,15 @@ class Sinusoidal(nn.Module):
         self.device = device
 
     def forward(self, length: int, n: int, position: int) -> torch.Tensor:
-        sinusoidal_encoding = torch.zeros((length,))
+        sinusoidal = torch.zeros((length,))
         for i in range(length):
             if i % 2 == 0:
-                sinusoidal_encoding[i] = torch.sin(position / 1000**(i/length))
+                sinusoidal[i] = np.sin(position / 1000**(i/length))
             else:
-                sinusoidal_encoding[i] = torch.cos(
-                    position / 1000**((i-1)/length))
-        sinusoidal_encoding = sinusoidal_encoding.unsqueeze(0).unsqueeze(0)
-        sinusoidal_encoding = sinusoidal_encoding.expand(n, 1, -1)
-        return sinusoidal_encoding
+                sinusoidal[i] = np.cos(position / 1000**((i-1)/length))
+        sinusoidal = sinusoidal.unsqueeze(0).unsqueeze(0)
+        sinusoidal = sinusoidal.expand(n, 1, -1)
+        return sinusoidal
 
 
 def dual(in_channel, out_channel):
