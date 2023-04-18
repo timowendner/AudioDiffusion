@@ -11,14 +11,21 @@ class Sinusoidal(nn.Module):
 
 
 def Sinu(length: int, n: int, position: int) -> torch.Tensor:
-    values = torch.arange(length).unsqueeze(0).unsqueeze(0).expand(n, 1, -1)
+    values = torch.arange(length)
     output = torch.zeros_like(values)
     # print(length, n, position, values, output)
-    # print(values[:,:,::2].shape, output[:,:,::2].shape)
-    # print(sin(position / pow(1000, values[:,:,::2] / length)).shape, output.shape)
-    output[:, :, ::2] = sin(position / pow(1000, values[:, :, ::2] / length))
-    output[:, :, 1::2] = cos(position / pow(1000, values[:, :, 1::2] / length))
+    test = values[::2]
+    test = test / length
+    test = pow(1000, test)
+    test = position / test
+    test = sin(test)
+    output[::2] = test
 
+    output[::2] = sin(position / pow(1000, values[::2] / length))
+    output[1::2] = cos(position / pow(1000, values[1::2] / length))
+
+    output = output.unsqueeze(0).unsqueeze(0)
+    output = output.expand(n, 1, -1)
     return output
 
 
@@ -72,7 +79,6 @@ class UNet(nn.Module):
     def forward(self, x: torch.Tensor, timestamp: int, label: int) -> torch.Tensor:
         n = x.shape[0]
         label *= 100
-        print(x.shape)
 
         t1 = self.sinusoidal(88200, n, timestamp)
         t2 = self.sinusoidal(22050, n, timestamp)
