@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 import numpy as np
+from torch import sin, cos, pow
 
 
 class Sinusoidal(nn.Module):
@@ -14,10 +15,8 @@ def Sinu(length: int, n: int, position: int) -> torch.Tensor:
     output = torch.zeros_like(values)
     # print(length, n, position, values, output)
     print(values[::2].shape, output[::2].shape)
-    output[::2] = torch.sin(
-        position / torch.pow(1000, values[::2] / length))
-    output[1::2] = torch.cos(
-        position / torch.pow(1000, values[1::2] / length))
+    output[::2] = sin(position / pow(1000, values[::2] / length))
+    output[1::2] = cos(position / pow(1000, values[1::2] / length))
 
     output = output.unsqueeze(0).unsqueeze(0)
     output = output.expand(n, 1, -1)
