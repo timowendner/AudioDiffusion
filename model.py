@@ -72,6 +72,7 @@ class UNet(nn.Module):
     def forward(self, x: torch.Tensor, timestamp: int, label: int) -> torch.Tensor:
         n = x.shape[0]
         label *= 100
+        print(x.shape)
 
         t1 = self.sinusoidal(88200, n, timestamp)
         t2 = self.sinusoidal(22050, n, timestamp)
