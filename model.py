@@ -8,19 +8,20 @@ class Sinusoidal(nn.Module):
         super(Sinusoidal, self).__init__()
         self.device = device
 
-    def forward(self, length: int, n: int, position: int) -> torch.Tensor:
-        values = torch.arange(length)
-        output = torch.zeros_like(values)
-        # print(length, n, position, values, output)
-        print(values[::2].shape, output[::2].shape)
-        output[::2] = torch.sin(
-            position / torch.pow(1000, values[::2] / length))
-        output[1::2] = torch.cos(
-            position / torch.pow(1000, values[1::2] / length))
 
-        output = output.unsqueeze(0).unsqueeze(0)
-        output = output.expand(n, 1, -1)
-        return output
+def Sinu(self, length: int, n: int, position: int) -> torch.Tensor:
+    values = torch.arange(length)
+    output = torch.zeros_like(values)
+    # print(length, n, position, values, output)
+    print(values[::2].shape, output[::2].shape)
+    output[::2] = torch.sin(
+        position / torch.pow(1000, values[::2] / length))
+    output[1::2] = torch.cos(
+        position / torch.pow(1000, values[1::2] / length))
+
+    output = output.unsqueeze(0).unsqueeze(0)
+    output = output.expand(n, 1, -1)
+    return output
 
 
 def dual(in_channel, out_channel):
@@ -50,7 +51,7 @@ class UNet(nn.Module):
     def __init__(self, device):
         super(UNet, self).__init__()
         self.device = device
-        self.sinusoidal = Sinusoidal(device)
+        self.sinusoidal = Sinu
 
         self.down1 = dual(1, 32)
         self.down2 = dual(32, 64)
