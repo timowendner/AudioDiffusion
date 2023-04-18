@@ -9,15 +9,16 @@ class Sinusoidal(nn.Module):
         self.device = device
 
     def forward(self, length: int, n: int, position: int) -> torch.Tensor:
-        sinusoidal = torch.zeros((length,))
-        for i in range(length):
-            if i % 2 == 0:
-                sinusoidal[i] = np.sin(position / 1000**(i/length))
-            else:
-                sinusoidal[i] = np.cos(position / 1000**((i-1)/length))
-        sinusoidal = sinusoidal.unsqueeze(0).unsqueeze(0)
-        sinusoidal = sinusoidal.expand(n, 1, -1)
-        return sinusoidal
+        values = torch.arange(length)
+        output = torch.zeros(length)
+        output[::2] = torch.sin(
+            position / torch.pow(1000, values[::2] / length))
+        output[1::2] = torch.cos(
+            position / torch.pow(1000, values[1::2] / length))
+
+        output = output.unsqueeze(0).unsqueeze(0)
+        output = output.expand(n, 1, -1)
+        return output
 
 
 def dual(in_channel, out_channel):
