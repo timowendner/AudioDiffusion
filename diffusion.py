@@ -41,7 +41,7 @@ class Diffusion(nn.Module):
             # l = torch.ones(n, device=model.device) * label
 
             # loop through all timesteps
-            for i in reversed(range(1, self.steps)):
+            for i in torch.arange(1, self.steps)[::-1]:
                 print(n)
                 test = torch.ones(n)
                 t = (torch.ones(n) * i).long().to(self.model.device)
