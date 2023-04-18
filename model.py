@@ -9,7 +9,7 @@ class Sinusoidal(nn.Module):
         super(Sinusoidal, self).__init__()
         self.device = device
 
-    def forward(self, length: int, position: torch.array) -> torch.Tensor:
+    def forward(self, length: int, position: torch.Tensor) -> torch.Tensor:
         n = position.shape[0]
         values = torch.arange(length).unsqueeze(
             0).unsqueeze(0).expand(n, 1, -1)
