@@ -65,7 +65,7 @@ class UNet(nn.Module):
         self.up1 = up(128, 32)
 
         self.output = nn.Sequential(
-            nn.Conv1d(64, 32, kernel_size=9, padding=4),
+            nn.Conv1d(64 + 2, 32, kernel_size=9, padding=4),
             nn.Conv1d(32, 32, kernel_size=9, padding=4),
             nn.Conv1d(32, 1, kernel_size=9, padding=4),
         )
