@@ -74,6 +74,7 @@ class UNet(nn.Module):
         label *= 100
         label = torch.empty(
             timestamp.shape[0], device=self.device).fill_(label)
+        timestamp = timestamp.to(self.device)
 
         t1 = self.sinusoidal(88200, timestamp)
         t2 = self.sinusoidal(22050, timestamp)
