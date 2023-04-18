@@ -33,6 +33,7 @@ class Diffusion(nn.Module):
         return x_t, x_t - x
 
     def sample(self, model, n: int, label: int):
+        n = 16
         model.eval()
         with torch.no_grad():
             # create a noise array that we want to denoise
