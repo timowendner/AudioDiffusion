@@ -41,10 +41,10 @@ class Diffusion(nn.Module):
             # l = torch.ones(n, device=model.device) * label
 
             # loop through all timesteps
-            for i in torch.arange(1, self.steps)[::-1]:
+            for i in torch.arange(1, self.steps, device=model.device)[::-1]:
                 print(n)
                 test = torch.ones(n)
-                t = (torch.ones(n) * i).long().to(self.model.device)
+                t = (torch.ones(n) * i).long().to(model.device)
                 alpha = self.alpha[t]
                 alpha_hat = self.alpha_hat[t]
                 beta = self.beta[t]
