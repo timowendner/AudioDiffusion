@@ -7,7 +7,7 @@ class Diffusion(nn.Module):
     def __init__(self, model, steps=1000, beta_start=1e-4, beta_end=0.02, length=88200) -> None:
         super(Diffusion, self).__init__()
         self.model = model
-        self.to(model.device)
+        # self.to(model.device)
 
         self.steps = steps
         self.beta_start = beta_start
