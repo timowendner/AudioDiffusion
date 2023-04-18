@@ -34,6 +34,7 @@ class Diffusion(nn.Module):
 
     def sample(self, model, n: int, label: int):
         n = 16
+        print(n)
         model.eval()
         with torch.no_grad():
             # create a noise array that we want to denoise
@@ -41,7 +42,7 @@ class Diffusion(nn.Module):
             # l = torch.ones(n, device=model.device) * label
 
             # loop through all timesteps
-            print(n)
+
             for i in torch.arange(1, self.steps, device=model.device)[::-1]:
                 test = torch.ones(n)
                 t = (torch.ones(n) * i).long().to(model.device)
