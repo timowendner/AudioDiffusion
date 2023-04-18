@@ -1,10 +1,11 @@
 import torch
 import torch.functional as F
-from torch import sqrt
+from torch import sqrt, nn
 
 
-class Diffusion:
+class Diffusion(nn.Module):
     def __init__(self, steps=1000, beta_start=1e-4, beta_end=0.02, length=88200) -> None:
+        super(Diffusion, self).__init__()
         self.steps = steps
         self.beta_start = beta_start
         self.beta_end = beta_end
@@ -14,18 +15,7 @@ class Diffusion:
         self.alpha = 1 - self.beta
         self.alpha_hat = torch.cumprod(self.alpha, dim=0)
 
-    def noise(self, x, t):
-        """Compute the noise of the Diffusion model
-
-        Args:
-            x (torch.Tensor): input tensor of the current audio-file
-            t (int): timestamp of the diffusion
-
-        Returns:
-            tuple (torch.Tensor, torch.Tensor):
-                - noise version of the audio-file
-                - the added noise
-        """
+    def forward(self, x, t):
         # if the timestamp is 0 then return a noise-free version
         if t == 0:
             return x, torch.zeros_like(x)
@@ -62,12 +52,12 @@ class Diffusion:
         model.train()
         return x
 
-    def loss(self, x0: torch.Tensor, noise: torch.Tensor = None):
-        batch_size = x0.shape[0]
-        t = torch.randint(0, self.n_steps, (batch_size,),
-                          device=x0.device)
-        if noise is None:
-            noise = torch.randn_like(x0)
-        xt = self.q_sample(x0, t, eps=noise)
-        eps_theta = self.eps_model(xt, t)
-        return F.mse_loss(noise, eps_theta)
+    # def loss(self, x0: torch.Tensor, noise: torch.Tensor = None):
+    #     batch_size = x0.shape[0]
+    #     t = torch.randint(0, self.n_steps, (batch_size,),
+    #                       device=x0.device)
+    #     if noise is None:
+    #         noise = torch.randn_like(x0)
+    #     xt = self.q_sample(x0, t, eps=noise)
+    #     eps_theta = self.eps_model(xt, t)
+    #     return F.mse_loss(noise, eps_theta)
