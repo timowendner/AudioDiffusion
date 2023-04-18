@@ -32,7 +32,6 @@ class Diffusion(nn.Module):
         x_t = x_t.clamp(-1, 1)
         return x_t, x_t - x
 
-    @torch.no_grad()
     def sample(self, model, n: int, label: int):
         n = 16
         print(n)
