@@ -15,7 +15,7 @@ def Sinu(length: int, n: int, position: int) -> torch.Tensor:
     output = torch.zeros_like(values).float()
     # print(length, n, position, values, output)
     print(values[::2].shape, output[::2].shape)
-    print(values.shape, output.shape)
+    print(sin(position / pow(1000, values[::2] / length)).shape, output.shape)
     output[::2] = sin(position / pow(1000, values[::2] / length))
     output[1::2] = cos(position / pow(1000, values[1::2] / length))
 
