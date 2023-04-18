@@ -45,15 +45,15 @@ class Diffusion(nn.Module):
 
         for i in reversed(range(1, self.steps)):
             t = (torch.ones(n) * i).long().to(model.device)
-            alpha = self.alpha[t]
-            alpha_hat = self.alpha_hat[t]
-            beta = self.beta[t]
+            alpha = self.alpha[t].unsqueeze(0).unsqueeze(0)
+            alpha_hat = self.alpha_hat[t].unsqueeze(0).unsqueeze(0)
+            beta = self.beta[t].unsqueeze(0).unsqueeze(0)
             predicted_noise = model(x, t, label)
             if i > 1:
                 noise = torch.randn_like(x)
             else:
                 noise = torch.zeros_like(x)
-            print(alpha.shape, beta.shape, t.shape, x.shape)
+            # print(alpha.shape, beta.shape, t.shape, x.shape)
             x = 1 / sqrt(alpha) * (x - ((1 - alpha) / (sqrt(1 - alpha_hat)))
                                    * predicted_noise) + sqrt(beta) * noise
             x = x.clamp(-1, 1)
