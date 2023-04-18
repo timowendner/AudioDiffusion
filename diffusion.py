@@ -14,7 +14,8 @@ class Diffusion(nn.Module):
         self.beta_end = beta_end
         self.length = length
 
-        self.beta = torch.linspace(beta_start, beta_end, steps)
+        self.beta = torch.linspace(
+            beta_start, beta_end, steps, device=model.device)
         self.alpha = 1 - self.beta
         self.alpha_hat = torch.cumprod(self.alpha, dim=0)
 
