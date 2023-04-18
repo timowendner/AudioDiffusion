@@ -41,6 +41,8 @@ class Diffusion(nn.Module):
 
             # loop through all timesteps
             for i in reversed(range(1, self.steps)):
+                print(n)
+                test = torch.ones(n)
                 t = (torch.ones(n) * i).long().to(self.model.device)
                 alpha = self.alpha[t]
                 alpha_hat = self.alpha_hat[t]
