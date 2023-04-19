@@ -25,7 +25,7 @@ def save_model(model):
     torch.save(model.state_dict(), filepath)
 
 
-def train_network(model, train_loader, num_epochs, diffusion):
+def train_network(model, train_loader, num_epochs):
     # Train the model
     model.train()
     total_step = len(train_loader)
@@ -81,19 +81,19 @@ def main():
     # sd.play(audiofile, samplerate=22050)
     # sd.wait()
 
-    num_epochs = 100
+    num_epochs = 1000
 
     # train the network
-    # train_network(model, train_loader, num_epochs, diffusion)
+    # train_network(model, train_loader, num_epochs)
 
     # create new samples
     outputpath = '/content/drive/MyDrive/AudioDiffusion/output/output1.pkl'
-    modelpath = '/content/drive/MyDrive/AudioDiffusionModels/testchamber_18_Apr_2211.p'
+    modelpath = '/content/drive/MyDrive/AudioDiffusionModels/testchamber_18_Apr_2229.p'
 
     model.load_state_dict(torch.load(modelpath, map_location=device))
 
     # create a new datapoint
-    x = diffusion.sample(16, 1)
+    x = diffusion.sample(100, 1)
     # save the data to a pickle file
     with open(outputpath, 'wb') as f:
         pkl.dump(x, f)
