@@ -72,9 +72,9 @@ def main():
     model = UNet(device).to(device)
     model.name = 'glados'
     diffusion = Diffusion(model, length=88200)
-    dataset = AudioDataset(file_path, device,  diffusion)
-    train_loader = DataLoader(dataset, batch_size=16,
-                              shuffle=True, num_workers=0)
+    # dataset = AudioDataset(file_path, device,  diffusion)
+    # train_loader = DataLoader(dataset, batch_size=16,
+    #                           shuffle=True, num_workers=0)
 
     num_epochs = 1000
 
