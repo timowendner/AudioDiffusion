@@ -13,15 +13,15 @@ from diffusion import Diffusion
 
 def save_model(model):
     # save the model with a timestamp
-    if not os.path.exists('trained_models'):
-        os.makedirs('trained_models')
+    if not os.path.exists('/content/drive/MyDrive/AudioDiffusion/models'):
+        os.makedirs('/content/drive/MyDrive/AudioDiffusion/models')
 
     # get the time now
     time_now = datetime.datetime.now()
     time_now = time_now.strftime("%d_%b_%H%M")
 
     # save the model
-    filepath = f"/content/drive/MyDrive/AudioDiffusionModels/testchamber_{time_now}.p"
+    filepath = f"/content/drive/MyDrive/AudioDiffusion/models/{model.name}_{time_now}.p"
     torch.save(model.state_dict(), filepath)
 
 
@@ -70,6 +70,7 @@ def main():
 
     # create the model and the dataloader
     model = UNet(device).to(device)
+    model.name = 'glados'
     diffusion = Diffusion(model, length=88200)
     dataset = AudioDataset(file_path, device,  diffusion)
     train_loader = DataLoader(dataset, batch_size=16,
