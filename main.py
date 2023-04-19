@@ -65,7 +65,7 @@ def train_network(model, train_loader, num_epochs):
 def main():
     # load the files
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    file_path = '/content/drive/MyDrive/AudioDiffusion/data/DogBark'
+    file_path = '/content/drive/MyDrive/AudioDiffusion/data'
     # file_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
 
     # create the model and the dataloader
