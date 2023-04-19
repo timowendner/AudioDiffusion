@@ -79,20 +79,21 @@ def main():
     num_epochs = 1000
 
     # train the network
-    train_network(model, train_loader, num_epochs)
+    # train_network(model, train_loader, num_epochs)
 
-    # # create new samples
-    # outputpath = '/content/drive/MyDrive/AudioDiffusion/output/output1.pkl'
-    # modelpath = '/content/drive/MyDrive/AudioDiffusion/models/glados_19_Apr_1229.p'
+    # create new samples
+    outputpath = '/content/drive/MyDrive/AudioDiffusion/output/output1.pkl'
+    modelpath = '/content/drive/MyDrive/AudioDiffusion/models/glados_19_Apr_1853.p'
 
-    # model.load_state_dict(torch.load(modelpath, map_location=device))
+    model.load_state_dict(torch.load(modelpath, map_location=device))
 
-    # # create a new datapoint
-    # x = diffusion.sample([1, 1, 1, 1])
+    # create a new datapoint
+    x = diffusion.sample([1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3,
+                         3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7])
 
-    # # save the data to a pickle file
-    # with open(outputpath, 'wb') as f:
-    #     pkl.dump(x, f)
+    # save the data to a pickle file
+    with open(outputpath, 'wb') as f:
+        pkl.dump(x, f)
 
     # # load the data from the pickle file
     # with open('data.pkl', 'rb') as f:
