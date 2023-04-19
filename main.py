@@ -88,7 +88,7 @@ def main():
 
     # create new samples
     outputpath = '/content/drive/MyDrive/AudioDiffusion/output/output1.pkl'
-    modelpath = '/content/drive/MyDrive/AudioDiffusionModels/testchamber_18_Apr_2229.p'
+    modelpath = '/content/drive/MyDrive/AudioDiffusion/models/testchamber_18_Apr_2229.p'
 
     model.load_state_dict(torch.load(modelpath, map_location=device))
 
