@@ -42,9 +42,9 @@ class Diffusion(nn.Module):
         # l = torch.ones(n, device=model.device) * label
 
         # loop through all timesteps
-        for i in reversed(range(1, self.steps)):
+        for i in range(1, self.steps):
             # define the needed variables
-            t = torch.ones(n, device=model.device).long() * i
+            t = torch.ones(n, device=model.device).long() * (self.steps - i)
             alpha = self.alpha[t].view(-1, 1, 1)
             alpha_hat = self.alpha_hat[t].view(-1, 1, 1)
             beta = self.beta[t].view(-1, 1, 1)
@@ -52,16 +52,18 @@ class Diffusion(nn.Module):
             # predict the noise with the model
             predicted_noise = model(x, t, l)
 
-            if i > 1:
-                noise = torch.randn_like(x)
-            else:
+            if i == self.steps - 1:
                 noise = torch.zeros_like(x)
+            else:
+                noise = torch.randn_like(x)
 
             x = 1 / sqrt(alpha) * (x - ((1 - alpha) / (sqrt(1 - alpha_hat)))
                                    * predicted_noise) + sqrt(beta) * noise
             # x = x.clamp(-1, 1)
 
-            if (i + 1) % 100 == 0:
-                print(f'Step [{i + 1}/{self.steps}]')
+            if i % 100 == 0:
+                print(f'Step [{i}/{self.steps}]')
+
+        x = x.clamp(-1, 1)
         model.train()
         return x
