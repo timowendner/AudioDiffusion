@@ -71,9 +71,9 @@ def main():
     # create the model and the dataloader
     model = UNet(device).to(device)
     diffusion = Diffusion(model, length=88200)
-    dataset = AudioDataset(file_path, device,  diffusion)
-    train_loader = DataLoader(dataset, batch_size=16,
-                              shuffle=True, num_workers=0)
+    # dataset = AudioDataset(file_path, device,  diffusion)
+    # train_loader = DataLoader(dataset, batch_size=16,
+    #   shuffle=True, num_workers=0)
     # # Play the first audio
     # import sounddevice as sd
     # audiofile = dataset[0][0].numpy()[0, :]
