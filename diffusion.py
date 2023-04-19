@@ -64,6 +64,6 @@ class Diffusion(nn.Module):
             if i % 100 == 0:
                 print(f'Step [{i}/{self.steps}]')
 
-        x = x.clamp(-1, 1)
+        # x = x.clamp(-1, 1)
         model.train()
         return x
