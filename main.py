@@ -54,7 +54,7 @@ def train_network(model, train_loader, num_epochs):
                 print(f'Epoch [{epoch + 1}/{num_epochs}]',
                       f'Step [{i + 1}/{total_step}]',
                       f'Loss: {loss.item():.4f}')
-        if epoch % 10 == 0 or epoch == num_epochs - 1:
+        if epoch % 3 == 0 or epoch == num_epochs - 1:
             save_model(model)
 
         # test the model and plot a example image
