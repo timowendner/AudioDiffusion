@@ -58,7 +58,7 @@ class AudioDataset(Dataset):
 
         # create the diffusion
         t = np.random.randint(1, 1000)
-        x_t, noise = self.diffusion.noise(waveform, t)
+        x_t, noise = self.diffusion(waveform, t)
 
         # normalize the data
 
