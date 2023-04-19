@@ -65,38 +65,32 @@ def train_network(model, train_loader, num_epochs):
 def main():
     # load the files
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    file_path = '/content/drive/MyDrive/Data/DogBark'
+    file_path = '/content/drive/MyDrive/AudioDiffusion/data/DogBark'
     # file_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
 
     # create the model and the dataloader
     model = UNet(device).to(device)
     diffusion = Diffusion(model, length=88200)
-    # dataset = AudioDataset(file_path, device,  diffusion)
-    # train_loader = DataLoader(dataset, batch_size=16,
-    #   shuffle=True, num_workers=0)
-    # # Play the first audio
-    # import sounddevice as sd
-    # audiofile = dataset[0][0].numpy()[0, :]
-    # print(audiofile.shape)
-    # sd.play(audiofile, samplerate=22050)
-    # sd.wait()
+    dataset = AudioDataset(file_path, device,  diffusion)
+    train_loader = DataLoader(dataset, batch_size=16,
+                              shuffle=True, num_workers=0)
 
     num_epochs = 1000
 
     # train the network
-    # train_network(model, train_loader, num_epochs)
+    train_network(model, train_loader, num_epochs)
 
-    # create new samples
-    outputpath = '/content/drive/MyDrive/AudioDiffusion/output/output1.pkl'
-    modelpath = '/content/drive/MyDrive/AudioDiffusion/models/testchamber_18_Apr_2229.p'
+    # # create new samples
+    # outputpath = '/content/drive/MyDrive/AudioDiffusion/output/output1.pkl'
+    # modelpath = '/content/drive/MyDrive/AudioDiffusion/models/testchamber_18_Apr_2229.p'
 
-    model.load_state_dict(torch.load(modelpath, map_location=device))
+    # model.load_state_dict(torch.load(modelpath, map_location=device))
 
-    # create a new datapoint
-    x = diffusion.sample(16, 1)
-    # save the data to a pickle file
-    with open(outputpath, 'wb') as f:
-        pkl.dump(x, f)
+    # # create a new datapoint
+    # x = diffusion.sample(16, 1)
+    # # save the data to a pickle file
+    # with open(outputpath, 'wb') as f:
+    #     pkl.dump(x, f)
 
     # # load the data from the pickle file
     # with open('data.pkl', 'rb') as f:
