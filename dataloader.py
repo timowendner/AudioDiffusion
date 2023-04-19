@@ -31,7 +31,7 @@ class AudioDataset(Dataset):
         return len(self.waveforms)
 
     def __getitem__(self, idx):
-        waveform = self.waveforms[idx]
+        waveform = self.waveforms[idx].to(self.device)
         sr = self.sample_rate
 
         # # specify the probabilities of the data augmentation
@@ -53,8 +53,7 @@ class AudioDataset(Dataset):
         waveform = waveform * (1 - torch.clamp(torch.rand(1,) ** 4, min=0.4))
 
         # create a different starting point and roll the data over
-        start = torch.randint(waveform.shape[1], size=(1,))
-        waveform = torch.roll(waveform, int(start))
+        waveform = torch.roll(waveform, np.random())
 
         # create the diffusion
         t = np.random.randint(1, 1000)
