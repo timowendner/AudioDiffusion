@@ -55,7 +55,7 @@ class AudioDataset(Dataset):
         print(waveform)
 
         # create a different starting point and roll the data over
-        waveform = torch.roll(waveform, np.random.uniform())
+        waveform = torch.roll(waveform, np.random.randint(waveform.shape[0]))
 
         # create the diffusion
         t = np.random.randint(1, 1000)
