@@ -72,28 +72,29 @@ def main():
     model = UNet(device).to(device)
     model.name = 'glados'
     diffusion = Diffusion(model, length=88200)
-    # dataset = AudioDataset(file_path, device,  diffusion)
-    # train_loader = DataLoader(dataset, batch_size=16,
-    #                           shuffle=True, num_workers=0)
+    dataset = AudioDataset(file_path, device,  diffusion)
+    train_loader = DataLoader(dataset, batch_size=16,
+                              shuffle=True, num_workers=0)
 
-    num_epochs = 1000
-
-    # train the network
-    # train_network(model, train_loader, num_epochs)
-
-    # create new samples
-    outputpath = '/content/drive/MyDrive/AudioDiffusion/output/output1.pkl'
     modelpath = '/content/drive/MyDrive/AudioDiffusion/models/glados_19_Apr_1853.p'
 
     model.load_state_dict(torch.load(modelpath, map_location=device))
 
-    # create a new datapoint
-    x = diffusion.sample([1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3,
-                         3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7])
+    num_epochs = 1000
 
-    # save the data to a pickle file
-    with open(outputpath, 'wb') as f:
-        pkl.dump(x, f)
+    # train the network
+    train_network(model, train_loader, num_epochs)
+
+    # # create new samples
+    # outputpath = '/content/drive/MyDrive/AudioDiffusion/output/output1.pkl'
+
+    # # create a new datapoint
+    # x = diffusion.sample([1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3,
+    #                      3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7])
+
+    # # save the data to a pickle file
+    # with open(outputpath, 'wb') as f:
+    #     pkl.dump(x, f)
 
     # # load the data from the pickle file
     # with open('data.pkl', 'rb') as f:
