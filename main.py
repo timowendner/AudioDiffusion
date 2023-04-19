@@ -39,9 +39,9 @@ def train_network(model, train_loader, num_epochs):
         print(f"Start Epoch: {epoch + 1}/{num_epochs}   {time_now}")
 
         # loop through the training loader
-        for i, (model_input, targets, t) in enumerate(train_loader):
+        for i, (model_input, targets, t, labels) in enumerate(train_loader):
             # Forward pass
-            outputs = model(model_input, t, 1)
+            outputs = model(model_input, t, labels)
             loss = mse(outputs, targets)
 
             # calculate gradients
