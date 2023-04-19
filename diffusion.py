@@ -28,8 +28,7 @@ class Diffusion(nn.Module):
         x_t = sqrt(self.alpha_hat[t]) * x + sqrt(1 - self.alpha_hat[t]) * noise
 
         # clamp the tensor and compute the noise distribution
-        x_t = x_t.clamp(-1, 1)
-        return x_t, x_t - x
+        return x_t, noise
 
     @torch.no_grad()
     def sample(self, n: int, label: int):
@@ -58,7 +57,7 @@ class Diffusion(nn.Module):
 
             x = 1 / sqrt(alpha) * (x - ((1 - alpha) / (sqrt(1 - alpha_hat)))
                                    * predicted_noise) + sqrt(beta) * noise
-            x = x.clamp(-1, 1)
+            # x = x.clamp(-1, 1)
 
             if (i + 1) % 100 == 0:
                 print(f'Step [{i + 1}/{self.steps}]')
