@@ -15,13 +15,25 @@ class AudioDataset(Dataset):
         files = glob.glob(os.path.join(
             file_path, "**", "*.wav"), recursive=True)
 
+        self.labels = {
+            1: 'DogBark',
+            2: 'Sneeze_Cough',
+            3: 'Rain',
+            4: 'MovingMotorVehicle',
+            5: 'Keyboard',
+            6: 'GunShot',
+            7: 'Footstep',
+        }
         waveforms = []
-        for path in files:
-            waveform, sr = torchaudio.load(path)
-            waveform = waveform * 0.98 / torch.max(waveform)
-            waveforms.append(waveform)
+        for label, folder in self.labels.items():
+            dir_path = os.path.join(file_path, folder)
+            files = glob.glob(os.path.join(dir_path, "*.wav"))
+            for path in files:
+                waveform, sr = torchaudio.load(path)
+                waveform = waveform * 0.98 / torch.max(waveform)
+                waveforms.append((label, waveform))
 
-        self.waveforms = torch.stack(waveforms)
+        self.waveforms = waveforms
         self.sample_rate = sample_rate
         self.device = device
         self.length = length
@@ -31,21 +43,22 @@ class AudioDataset(Dataset):
         return len(self.waveforms)
 
     def __getitem__(self, idx):
-        waveform = self.waveforms[idx].to(self.device)
+        label, waveform = self.waveforms[idx]
+        waveform = waveform.to(self.device)
 
         # Apply gain
-        waveform = waveform * np.random.uniform(0.7, 1)
+        waveform = waveform * np.random.uniform(0.75, 1)
 
         # create a different starting point and roll the data over
         waveform = torch.roll(waveform, np.random.randint(waveform.shape[0]))
 
         # create the diffusion
-        t = np.random.randint(1, 1000)
-        x_t, noise = self.diffusion(waveform, t)
+        timestamp = np.random.randint(1, 1000)
+        x_t, noise = self.diffusion(waveform, timestamp)
 
         x_t = x_t.to(self.device)
         noise = noise.to(self.device)
-        t = torch.ones(1, device=self.device) * t
-        label = torch.ones(1, device=self.device) * 1
+        timestamp = torch.ones(1, device=self.device) * timestamp
+        label = torch.ones(1, device=self.device) * label
 
-        return x_t, noise, t, label
+        return x_t, noise, timestamp, label
