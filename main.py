@@ -93,7 +93,7 @@ def main():
     model.load_state_dict(torch.load(modelpath, map_location=device))
 
     # create a new datapoint
-    x = diffusion.sample(100, 1)
+    x = diffusion.sample(16, 1)
     # save the data to a pickle file
     with open(outputpath, 'wb') as f:
         pkl.dump(x, f)
