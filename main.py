@@ -62,9 +62,9 @@ def train_network(model, file_path, diffusion, num_epochs):
                       f'Loss: {loss.item():.4f}')
 
         # save the model if enough time has passed
-        # if abs(time.time() - start_time) >= 5*60 or epoch == num_epochs - 1:
-        save_model(model)
-        # start_time = time.time()
+        if abs(time.time() - start_time) >= 5*60 or epoch == num_epochs - 1:
+            save_model(model)
+            start_time = time.time()
 
         # test the model and plot a example image
         # test_network(model, loaders["test"], device)
