@@ -93,8 +93,8 @@ class UNet(nn.Module):
         x3 = self.down3(torch.cat([t3, l3, self.pool(x2)], 1))
         x4 = self.down4(torch.cat([t4, l4, self.pool(x3)], 1))
 
-        step_embedding = self.step_embedding(timestamp)
-        label_embedding = self.label_embedding(label)
+        step_embedding = self.step_embedding(timestamp.long())
+        label_embedding = self.label_embedding(label.long())
         out = torch.cat(
             [t5, l5, step_embedding, label_embedding, self.pool(x4)], 1)
 
