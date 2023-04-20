@@ -107,8 +107,6 @@ class UNet(nn.Module):
         step_embedding = torch.unsqueeze(step_embedding, 1)
         label_embedding = self.label_embedding(label)
         label_embedding = torch.unsqueeze(label_embedding, 1)
-        print(step_embedding.shape)
-        print(label_embedding.shape)
         out = torch.cat(
             [t5, l5, step_embedding, label_embedding, self.pool(x4)], 1)
 
