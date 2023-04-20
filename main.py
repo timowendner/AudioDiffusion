@@ -26,15 +26,15 @@ def save_model(model):
 
 
 def train_network(model, file_path, diffusion, num_epochs):
+    # create the dataset
+    dataset = AudioDataset(file_path, model.device,  diffusion)
+    train_loader = DataLoader(dataset, batch_size=16,
+                              shuffle=True, num_workers=0)
     # Train the model
     model.train()
     total_step = len(train_loader)
     mse = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-
-    dataset = AudioDataset(file_path, model.device,  diffusion)
-    train_loader = DataLoader(dataset, batch_size=16,
-                              shuffle=True, num_workers=0)
 
     for epoch in range(num_epochs):
         # print the epoch and current time
