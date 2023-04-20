@@ -44,13 +44,13 @@ class Diffusion(nn.Module):
         # loop through all timesteps
         for i in range(1, self.steps):
             # define the needed variables
-            t = torch.ones(n, device=model.device).long() * (self.steps - i)
+            t = torch.ones(n, device=model.device) * (self.steps - i)
             alpha = self.alpha[t].view(-1, 1, 1)
             alpha_hat = self.alpha_hat[t].view(-1, 1, 1)
             beta = self.beta[t].view(-1, 1, 1)
 
             # predict the noise with the model
-            predicted_noise = model(x, t, l)
+            predicted_noise = model(x, t.view(-1, 1, 1), l)
 
             if i == self.steps - 1:
                 noise = torch.zeros_like(x)
