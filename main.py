@@ -37,10 +37,10 @@ def train_network(model, file_path, diffusion, num_epochs):
     mse = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
+    start_time = time.time()
     for epoch in range(num_epochs):
         # print the epoch and current time
         time_now = datetime.datetime.now()
-        start_time = time.time()
         time_now = time_now.strftime("%H:%M")
         print(f"Start Epoch: {epoch + 1}/{num_epochs}   {time_now}")
 
