@@ -50,7 +50,7 @@ class Diffusion(nn.Module):
             beta = self.beta[t].view(-1, 1, 1)
 
             # predict the noise with the model
-            timestamp = torch.ones(1, device=self.device) * (self.steps - i)
+            timestamp = torch.ones(1, device=model.device) * (self.steps - i)
             timestamp = timestamp.view(-1, 1, 1)
             predicted_noise = model(x, timestamp, l)
 
