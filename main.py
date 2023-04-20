@@ -102,13 +102,13 @@ def main():
     print(f"Number of trainable parameters: {num_params:,}")
 
     # train the network
-    train_network(model, file_path, diffusion, num_epochs=1000)
+    # train_network(model, file_path, diffusion, num_epochs=1000)
 
-    # # create new samples
-    # outputpath = '/content/drive/MyDrive/AudioDiffusion/output/output2.pkl'
-    # labels = [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4,
-    #           4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7]
-    # sample(diffusion, outputpath, labels)
+    # create new samples
+    outputpath = '/content/drive/MyDrive/AudioDiffusion/output/output2.pkl'
+    labels = [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4,
+              4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7]
+    sample(diffusion, outputpath, labels)
 
     # # load the data from the pickle file
     # with open('data.pkl', 'rb') as f:
