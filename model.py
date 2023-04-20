@@ -46,6 +46,15 @@ def up(in_channel, out_channel, pad=0):
     )
 
 
+def embedding(in_channel, out_channel):
+    return nn.Sequential(
+        nn.Linear(1, in_channel),
+        nn.ReLU(inplace=True),
+        nn.Linear(in_channel, out_channel),
+        nn.ReLU(inplace=True),
+    )
+
+
 class UNet(nn.Module):
     def __init__(self, device, step_count, label_count):
         super(UNet, self).__init__()
@@ -58,8 +67,9 @@ class UNet(nn.Module):
         self.down4 = dual(256, 512)
 
         self.pool = nn.MaxPool1d(kernel_size=4, stride=4)
-        self.step_embedding = nn.Embedding(step_count, 344)
-        self.label_embedding = nn.Embedding(label_count, 344)
+
+        self.step_embedding = embedding(step_count, 344)
+        self.label_embedding = embedding(label_count, 344)
 
         self.up4 = up(512 + 2, 512, pad=2)
         self.up3 = up(1024, 256)
@@ -95,6 +105,8 @@ class UNet(nn.Module):
 
         step_embedding = self.step_embedding(timestamp)
         label_embedding = self.label_embedding(label)
+        print(step_embedding.shape)
+        print(label_embedding.shape)
         out = torch.cat(
             [t5, l5, step_embedding, label_embedding, self.pool(x4)], 1)
 
