@@ -94,9 +94,9 @@ def main():
     model.name = 'duplex'
     diffusion = Diffusion(model, length=88200)
 
-    # # load a model
-    # modelpath = '/content/drive/MyDrive/AudioDiffusion/models/glados_20_Apr_0044.p'
-    # model.load_state_dict(torch.load(modelpath, map_location=device))
+    # load a model
+    modelpath = '/content/drive/MyDrive/AudioDiffusion/models/duplex_20_Apr_1424.p'
+    model.load_state_dict(torch.load(modelpath, map_location=device))
 
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"Number of trainable parameters: {num_params:,}")
