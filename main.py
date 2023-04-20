@@ -25,12 +25,16 @@ def save_model(model):
     torch.save(model.state_dict(), filepath)
 
 
-def train_network(model, train_loader, num_epochs):
+def train_network(model, file_path, diffusion, num_epochs):
     # Train the model
     model.train()
     total_step = len(train_loader)
     mse = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+
+    dataset = AudioDataset(file_path, model.device,  diffusion)
+    train_loader = DataLoader(dataset, batch_size=16,
+                              shuffle=True, num_workers=0)
 
     for epoch in range(num_epochs):
         # print the epoch and current time
@@ -62,39 +66,44 @@ def train_network(model, train_loader, num_epochs):
         # plot(1, loaders["train"], model, device)
 
 
+def sample(diffusion, outputpath: str, labels: list):
+    # create a new datapoint
+    x = diffusion.sample(labels)
+    x.to('cpu')
+
+    # save the data to a pickle file
+    with open(outputpath, 'wb') as f:
+        pkl.dump(x, f)
+
+
 def main():
     # load the files
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     file_path = '/content/drive/MyDrive/AudioDiffusion/data'
     # file_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
 
-    # create the model and the dataloader
-    model = UNet(device).to(device)
-    model.name = 'glados'
+    # create the model and the diffusion
+    steps = 1000
+    labels = 7
+    model = UNet(device, steps, labels).to(device)
+    model.name = 'duplex'
     diffusion = Diffusion(model, length=88200)
-    # dataset = AudioDataset(file_path, device,  diffusion)
-    # train_loader = DataLoader(dataset, batch_size=16,
-    #                           shuffle=True, num_workers=0)
 
-    modelpath = '/content/drive/MyDrive/AudioDiffusion/models/glados_20_Apr_0044.p'
+    # # load a model
+    # modelpath = '/content/drive/MyDrive/AudioDiffusion/models/glados_20_Apr_0044.p'
+    # model.load_state_dict(torch.load(modelpath, map_location=device))
 
-    model.load_state_dict(torch.load(modelpath, map_location=device))
-
-    num_epochs = 1000
+    num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    print(f"Number of trainable parameters: {num_params}")
 
     # train the network
-    # train_network(model, train_loader, num_epochs)
+    train_network(model, file_path, diffusion, num_epochs=1000)
 
-    # create new samples
-    outputpath = '/content/drive/MyDrive/AudioDiffusion/output/output2.pkl'
-
-    # create a new datapoint
-    x = diffusion.sample([1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3,
-                         3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7])
-
-    # save the data to a pickle file
-    with open(outputpath, 'wb') as f:
-        pkl.dump(x, f)
+    # # create new samples
+    # outputpath = '/content/drive/MyDrive/AudioDiffusion/output/output2.pkl'
+    # labels = [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4,
+    #           4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7]
+    # sample(diffusion, outputpath, labels)
 
     # # load the data from the pickle file
     # with open('data.pkl', 'rb') as f:

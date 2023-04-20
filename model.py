@@ -47,27 +47,31 @@ def up(in_channel, out_channel, pad=0):
 
 
 class UNet(nn.Module):
-    def __init__(self, device):
+    def __init__(self, device, step_count, label_count):
         super(UNet, self).__init__()
         self.device = device
         self.sinusoidal = Sinusoidal(device)
 
-        self.down1 = dual(1, 32)
-        self.down2 = dual(32, 64)
-        self.down3 = dual(64, 128)
-        self.down4 = dual(128, 256)
+        self.down1 = dual(1, 64)
+        self.down2 = dual(64, 128)
+        self.down3 = dual(128, 256)
+        self.down4 = dual(256, 512)
 
         self.pool = nn.MaxPool1d(kernel_size=4, stride=4)
+        self.step_embedding = nn.Embedding(step_count, 344)
+        self.label_embedding = nn.Embedding(label_count, 344)
 
-        self.up4 = up(256, 256, pad=2)
-        self.up3 = up(512, 128)
-        self.up2 = up(256, 64, pad=2)
-        self.up1 = up(128, 32)
+        self.up4 = up(512 + 2, 512, pad=2)
+        self.up3 = up(1024, 256)
+        self.up2 = up(512, 128, pad=2)
+        self.up1 = up(256, 64)
 
         self.output = nn.Sequential(
-            nn.Conv1d(64 + 2, 32, kernel_size=9, padding=4),
-            nn.Conv1d(32, 32, kernel_size=9, padding=4),
-            nn.Conv1d(32, 1, kernel_size=9, padding=4),
+            nn.Conv1d(128 + 2, 64, kernel_size=9, padding=4),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(64, 64, kernel_size=9, padding=4),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(64, 1, kernel_size=9, padding=4),
         )
 
     def forward(self, x: Tensor, timestamp: Tensor, label: Tensor) -> Tensor:
@@ -89,7 +93,12 @@ class UNet(nn.Module):
         x3 = self.down3(torch.cat([t3, l3, self.pool(x2)], 1))
         x4 = self.down4(torch.cat([t4, l4, self.pool(x3)], 1))
 
-        out = self.up4(torch.cat([t5, l5, self.pool(x4)], 1))
+        step_embedding = self.step_embedding(timestamp)
+        label_embedding = self.label_embedding(label)
+        out = torch.cat(
+            [t5, l5, step_embedding, label_embedding, self.pool(x4)], 1)
+
+        out = self.up4(out)
         out = self.up3(torch.cat([t4, l4, out, x4], 1))
         out = self.up2(torch.cat([t3, l3, out, x3], 1))
         out = self.up1(torch.cat([t2, l2, out, x2], 1))
