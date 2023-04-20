@@ -56,7 +56,7 @@ def train_network(model, file_path, diffusion, num_epochs):
             optimizer.step()
             # nn.utils.clip_grad_norm_(model.parameters(), 0.001)
 
-            if (i + 1) % 10 == 0:
+            if (i + 1) % 50 == 0:
                 print(f'Epoch [{epoch + 1}/{num_epochs}]',
                       f'Step [{i + 1}/{total_step}]',
                       f'Loss: {loss.item():.4f}')
