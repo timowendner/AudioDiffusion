@@ -52,7 +52,7 @@ class Diffusion(nn.Module):
             # predict the noise with the model
             timestamp = (torch.tensor(n, device=model.device)
                          * (self.steps - i)).view(-1, 1, 1)
-            predicted_noise = model(x, t.view(-1, 1, 1), l)
+            predicted_noise = model(x, timestamp, l)
 
             if i == self.steps - 1:
                 noise = torch.zeros_like(x)
