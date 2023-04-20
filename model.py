@@ -75,6 +75,8 @@ class UNet(nn.Module):
         )
 
     def forward(self, x: Tensor, timestamp: Tensor, label: Tensor) -> Tensor:
+        timestamp = timestamp.int()
+        label = label.int()
 
         t1 = self.sinusoidal(88200, timestamp)
         t2 = self.sinusoidal(22050, timestamp)
@@ -93,12 +95,8 @@ class UNet(nn.Module):
         x3 = self.down3(torch.cat([t3, l3, self.pool(x2)], 1))
         x4 = self.down4(torch.cat([t4, l4, self.pool(x3)], 1))
 
-        print(timestamp.shape, label.shape)
-        test = self.step_embedding(timestamp.long())
-        print(test.shape)
-
-        step_embedding = self.step_embedding(timestamp.long())[:, :, 0, :]
-        label_embedding = self.label_embedding(label.long())[:, :, 0, :]
+        step_embedding = self.step_embedding(timestamp)
+        label_embedding = self.label_embedding(label)
         out = torch.cat(
             [t5, l5, step_embedding, label_embedding, self.pool(x4)], 1)
 
