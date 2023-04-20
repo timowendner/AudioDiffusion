@@ -7,6 +7,7 @@ import pickle as pkl
 from dataloader import AudioDataset
 from model import UNet
 import datetime
+import time
 import os
 from diffusion import Diffusion
 
@@ -39,6 +40,7 @@ def train_network(model, file_path, diffusion, num_epochs):
     for epoch in range(num_epochs):
         # print the epoch and current time
         time_now = datetime.datetime.now()
+        start_time = time.time()
         time_now = time_now.strftime("%H:%M")
         print(f"Start Epoch: {epoch + 1}/{num_epochs}   {time_now}")
 
@@ -58,8 +60,11 @@ def train_network(model, file_path, diffusion, num_epochs):
                 print(f'Epoch [{epoch + 1}/{num_epochs}]',
                       f'Step [{i + 1}/{total_step}]',
                       f'Loss: {loss.item():.4f}')
-        if epoch % 3 == 0 or epoch == num_epochs - 1:
+
+        # save the model if enough time has passed
+        if time.time() - start_time >= 5*60 or epoch == num_epochs - 1:
             save_model(model)
+            start_time = time.time()
 
         # test the model and plot a example image
         # test_network(model, loaders["test"], device)
@@ -94,7 +99,7 @@ def main():
     # model.load_state_dict(torch.load(modelpath, map_location=device))
 
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(f"Number of trainable parameters: {num_params}")
+    print(f"Number of trainable parameters: {num_params:,}")
 
     # train the network
     train_network(model, file_path, diffusion, num_epochs=1000)

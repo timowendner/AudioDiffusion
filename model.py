@@ -61,23 +61,23 @@ class UNet(nn.Module):
         self.device = device
         self.sinusoidal = Sinusoidal(device)
 
-        self.down1 = dual(1, 64)
-        self.down2 = dual(64, 128)
-        self.down3 = dual(128, 256)
-        self.down4 = dual(256, 512)
+        self.down1 = dual(1, 48)
+        self.down2 = dual(48, 96)
+        self.down3 = dual(96, 192)
+        self.down4 = dual(192, 384)
 
         self.pool = nn.MaxPool1d(kernel_size=4, stride=4)
 
         self.step_embedding = embedding(step_count, 344)
         self.label_embedding = embedding(label_count, 344)
 
-        self.up4 = up(512 + 2, 512, pad=2)
-        self.up3 = up(1024, 256)
-        self.up2 = up(512, 128, pad=2)
-        self.up1 = up(256, 64)
+        self.up4 = up(384 + 2, 384, pad=2)
+        self.up3 = up(768, 192)
+        self.up2 = up(384, 96, pad=2)
+        self.up1 = up(192, 48)
 
         self.output = nn.Sequential(
-            nn.Conv1d(128 + 2, 64, kernel_size=9, padding=4),
+            nn.Conv1d(96 + 2, 64, kernel_size=9, padding=4),
             nn.ReLU(inplace=True),
             nn.Conv1d(64, 64, kernel_size=9, padding=4),
             nn.ReLU(inplace=True),
