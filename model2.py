@@ -100,6 +100,8 @@ class UNet(nn.Module):
         l4 = self.sinusoidal(1378, label)
         l5 = self.sinusoidal(344, label)
 
+        print(t1.shape, l1.shape, x.shape. label.shape, timestamp.shape)
+
         x1 = self.down1(torch.cat([t1, l1, x], 1))
         x2 = self.down2(torch.cat([t2, l2, self.pool(x1)], 1))
         x3 = self.down3(torch.cat([t3, l3, self.pool(x2)], 1))
@@ -114,7 +116,10 @@ class UNet(nn.Module):
 
         out = self.up4(out)
         out = self.up3(torch.cat([t4, l4, out, x4], 1))
+
         out = self.up2(torch.cat([t3, l3, out, x3], 1))
+        print(t2.shape, l2.shape, out.shape,
+              x.shape. label.shape, timestamp.shape)
         out = self.up1(torch.cat([t2, l2, out, x2], 1))
         out = self.output(torch.cat([t1, l1, out, x1], 1))
         return out

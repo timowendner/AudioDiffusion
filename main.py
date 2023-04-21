@@ -72,7 +72,7 @@ def main():
     # data_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
 
     # create the model and the diffusion
-    steps = 1000
+    steps = 100
     labels = 7
     model = UNet(device, steps, labels).to(device)
     model.name = 'duplex'
