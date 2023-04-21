@@ -35,7 +35,7 @@ def dual(in_channel, out_channel):
 def up(in_channel, out_channel, pad=0):
     return nn.Sequential(
         nn.Conv1d(in_channel + 2, in_channel, kernel_size=9, padding=4),
-        nn.Dropout(p=0.1),
+        # nn.Dropout(p=0.1),
         nn.ReLU(inplace=True),
         nn.Conv1d(in_channel, out_channel, kernel_size=9, padding=4),
         nn.ReLU(inplace=True),
