@@ -10,18 +10,15 @@ class Sinusoidal(nn.Module):
         super(Sinusoidal, self).__init__()
         self.device = device
 
-    def forward(self, length: int, position: torch.Tensor) -> torch.Tensor:
+    def forward(self, position: torch.Tensor, length: int) -> torch.Tensor:
         n = position.shape[0]
-        values = torch.arange(length, device=self.device).unsqueeze(
-            0).unsqueeze(0).expand(n, 1, -1)
-        output = torch.zeros_like(values, device=self.device)
-        position = position.view(-1, 1, 1)
-
-        output[:, :, ::2] = sin(
-            position / pow(1000, values[:, :, ::2] / length))
-        output[:, :, 1::2] = cos(
-            position / pow(1000, values[:, :, 1::2] / length))
-        return output
+        values = torch.arange(length, device=self.device)
+        output = torch.zeros((n, length), device=self.device)
+        output[:, ::2] = sin(position.view(-1, 1) /
+                             pow(1000, values[::2] / length))
+        output[:, 1::2] = cos(position.view(-1, 1) /
+                              pow(1000, values[1::2] / length))
+        return output.view(n, 1, -1)
 
 
 def dual(in_channel, out_channel):
@@ -88,21 +85,22 @@ class UNet(nn.Module):
         )
 
     def forward(self, x: Tensor, timestamp: Tensor, label: Tensor) -> Tensor:
+        n = x.shape[0]
 
-        t1 = self.sinusoidal(88200, timestamp)
-        t2 = self.sinusoidal(22050, timestamp)
-        t3 = self.sinusoidal(5512, timestamp)
-        t4 = self.sinusoidal(1378, timestamp)
-        t5 = self.sinusoidal(344, timestamp)
+        t1 = self.sinusoidal(timestamp, 88200)
+        t2 = self.sinusoidal(timestamp, 22050)
+        t3 = self.sinusoidal(timestamp, 5512)
+        t4 = self.sinusoidal(timestamp, 1378)
+        t5 = self.sinusoidal(timestamp, 344)
 
-        l1 = self.sinusoidal(88200, label)
-        l2 = self.sinusoidal(22050, label)
-        l3 = self.sinusoidal(5512, label)
-        l4 = self.sinusoidal(1378, label)
-        l5 = self.sinusoidal(344, label)
+        l1 = self.sinusoidal(label, 88200)
+        l2 = self.sinusoidal(label, 22050)
+        l3 = self.sinusoidal(label, 5512)
+        l4 = self.sinusoidal(label, 1378)
+        l5 = self.sinusoidal(label, 344)
 
-        timestamp = F.one_hot(timestamp, self.step_count)
-        label = F.one_hot(label, self.label_count)
+        timestamp = F.one_hot(timestamp.long(), self.step_count).view(n, 1, -1)
+        label = F.one_hot(label.long(), self.step_count).view(n, 1, -1)
 
         print(t1.shape, l1.shape, x.shape, label.shape, timestamp.shape)
 

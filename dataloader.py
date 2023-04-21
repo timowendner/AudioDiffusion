@@ -56,7 +56,5 @@ class AudioDataset(Dataset):
 
         x_t = x_t.to(self.device)
         noise = noise.to(self.device)
-        timestamp = torch.ones(1, device=self.device) * timestamp
-        label = torch.ones(1, device=self.device) * label
 
         return x_t, noise, timestamp, label
