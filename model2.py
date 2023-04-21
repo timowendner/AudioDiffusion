@@ -134,7 +134,7 @@ class UNet(nn.Module):
 
         out = self.up2(torch.cat([t3, l3, out, x3], 1))
         print(t2.shape, l2.shape, out.shape,
-              x.shape. label.shape, timestamp.shape)
+              x.shape, label.shape, timestamp.shape)
         out = self.up1(torch.cat([t2, l2, out, x2], 1))
         out = self.output(torch.cat([t1, l1, out, x1], 1))
         return out
