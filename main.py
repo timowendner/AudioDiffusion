@@ -75,7 +75,7 @@ def main():
     steps = 100
     labels = 7
     model = UNet(device, steps, labels).to(device)
-    model.name = 'duplex'
+    model.name = 'aperture'
     model.epoch = 0
     diffusion = Diffusion(model, length=88200, steps=steps)
 
