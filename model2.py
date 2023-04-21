@@ -105,7 +105,7 @@ class UNet(nn.Module):
         timestamp = F.one_hot(timestamp.long(), self.step_count + 1)
         timestamp = timestamp.view(n, 1, -1).type(torch.float32)
         label = F.one_hot(label.long(), self.step_count + 1)
-        label = label.view(n, 1, -1).float(32)
+        label = label.view(n, 1, -1).type(torch.float32)
 
         print(t1.shape, l1.shape, x.shape, label.shape, timestamp.shape)
         print(t1.device, l1.device, x.device, label.device, timestamp.device)
