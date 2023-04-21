@@ -100,7 +100,7 @@ class UNet(nn.Module):
         l4 = self.sinusoidal(1378, label)
         l5 = self.sinusoidal(344, label)
 
-        print(t1.shape, l1.shape, x.shape. label, timestamp)
+        print(t1.shape, l1.shape, x.shape, label.shape, timestamp.shape)
 
         x1 = self.down1(torch.cat([t1, l1, x], 1))
         x2 = self.down2(torch.cat([t2, l2, self.pool(x1)], 1))
