@@ -12,9 +12,6 @@ from diffusion import Diffusion
 
 class AudioDataset(Dataset):
     def __init__(self, file_path: str, device: torch.device, diffusion: Diffusion, length=88200, sample_rate=22050, ):
-        files = glob.glob(os.path.join(
-            file_path, "**", "*.wav"), recursive=True)
-
         self.labels = {
             1: 'DogBark',
             2: 'Sneeze_Cough',
