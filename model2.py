@@ -12,7 +12,6 @@ class Sinusoidal(nn.Module):
 
     def forward(self, position: torch.Tensor, length: int) -> torch.Tensor:
         n = position.shape[0]
-        print(position)
         values = torch.arange(length, device=self.device)
         output = torch.zeros((n, length), device=self.device)
         output[:, ::2] = sin(position.view(-1, 1) /
