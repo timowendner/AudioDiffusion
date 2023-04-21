@@ -102,7 +102,7 @@ def main():
     print(f"Number of trainable parameters: {num_params:,}")
 
     # train the network
-    # train_network(model, file_path, diffusion, num_epochs=1000)
+    train_network(model, file_path, diffusion, num_epochs=1000)
 
     # create new samples
     outputpath = '/content/drive/MyDrive/AudioDiffusion/output/output3.pkl'

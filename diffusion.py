@@ -67,8 +67,8 @@ class Diffusion(nn.Module):
                                        * predicted_noise) + sqrt(beta) * noise
                 # x = x.clamp(-1, 1)
 
-                if i % 100 == 0:
-                    print(f'Step [{i}/{self.steps}]')
+            if i % 100 == 0:
+                print(f'Step [{i}/{self.steps}]')
 
         # x = x.clamp(-1, 1)
         model.train()
