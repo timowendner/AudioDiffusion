@@ -83,7 +83,6 @@ class UNet(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv1d(32, 1, kernel_size=9, padding=4),
         )
-        self.test = nn.Conv1d(3, 3, kernel_size=9, padding=4)
 
     def forward(self, x: Tensor, timestamp: Tensor, label: Tensor) -> Tensor:
         timestamp = timestamp.to(self.device)
@@ -108,33 +107,19 @@ class UNet(nn.Module):
         label = F.one_hot(label.long(), self.label_count + 1)
         label = label.view(n, 1, -1).type(torch.float32)
 
-        print(t1.shape, l1.shape, x.shape, label.shape, timestamp.shape)
-        print(t1.device, l1.device, x.device, label.device, timestamp.device)
         x = torch.cat([t1, l1, x], 1)
-        print(x.shape, x.dtype)
-        x = self.test(x)
-        print(x.shape, x.dtype)
         x1 = self.down1(x)
         x2 = self.down2(torch.cat([t2, l2, self.pool(x1)], 1))
         x3 = self.down3(torch.cat([t3, l3, self.pool(x2)], 1))
         x4 = self.down4(torch.cat([t4, l4, self.pool(x3)], 1))
 
-        print(label.shape, label.dtype, self.label_embedding)
-
-        step_embedding = self.step_embedding(timestamp)
-        label_embedding = self.label_embedding(label)
-        print(step_embedding.shape, label_embedding.shape)
-        out = torch.cat(
-            [t5, l5, step_embedding, label_embedding, self.pool(x4)], 1)
-
-        print(out.shape)
+        step_emb = self.step_embedding(timestamp)
+        label_emb = self.label_embedding(label)
+        out = torch.cat([t5, l5, step_emb, label_emb, self.pool(x4)], 1)
 
         out = self.up4(out)
         out = self.up3(torch.cat([t4, l4, out, x4], 1))
-
         out = self.up2(torch.cat([t3, l3, out, x3], 1))
-        print(t2.shape, l2.shape, out.shape,
-              x.shape, label.shape, timestamp.shape)
         out = self.up1(torch.cat([t2, l2, out, x2], 1))
         out = self.output(torch.cat([t1, l1, out, x1], 1))
         return out
