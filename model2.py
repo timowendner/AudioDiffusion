@@ -96,11 +96,12 @@ class UNet(nn.Module):
         t4 = self.sinusoidal(timestamp, 1378)
         t5 = self.sinusoidal(timestamp, 344)
 
-        l1 = self.sinusoidal(label, 88200)
-        l2 = self.sinusoidal(label, 22050)
-        l3 = self.sinusoidal(label, 5512)
-        l4 = self.sinusoidal(label, 1378)
-        l5 = self.sinusoidal(label, 344)
+        l = label * 100
+        l1 = self.sinusoidal(l, 88200)
+        l2 = self.sinusoidal(l, 22050)
+        l3 = self.sinusoidal(l, 5512)
+        l4 = self.sinusoidal(l, 1378)
+        l5 = self.sinusoidal(l, 344)
 
         timestamp = F.one_hot(timestamp.long(), self.step_count + 1)
         timestamp = timestamp.view(n, 1, -1).type(torch.float32)

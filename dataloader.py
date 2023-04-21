@@ -28,7 +28,7 @@ class AudioDataset(Dataset):
             for path in files:
                 waveform, sr = torchaudio.load(path)
                 waveform = waveform * 0.98 / torch.max(waveform)
-                waveforms.append((label*100, waveform))
+                waveforms.append((label, waveform))
 
         self.waveforms = waveforms
         self.sample_rate = sample_rate
