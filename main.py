@@ -95,14 +95,14 @@ def main():
     diffusion = Diffusion(model, length=88200)
 
     # load a model
-    modelpath = '/content/drive/MyDrive/AudioDiffusion/models/duplex_21_Apr_0233.p'
+    modelpath = '/content/drive/MyDrive/AudioDiffusion/models/duplex_21_Apr_1527.p'
     model.load_state_dict(torch.load(modelpath, map_location=device))
 
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"Number of trainable parameters: {num_params:,}")
 
     # train the network
-    train_network(model, file_path, diffusion, num_epochs=1000)
+    # train_network(model, file_path, diffusion, num_epochs=1000)
 
     # create new samples
     outputpath = '/content/drive/MyDrive/AudioDiffusion/output/output3.pkl'
