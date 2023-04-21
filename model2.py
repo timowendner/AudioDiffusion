@@ -101,7 +101,7 @@ class UNet(nn.Module):
         l4 = self.sinusoidal(1378, label)
         l5 = self.sinusoidal(344, label)
 
-        step = F.one_hot(step, self.step_count)
+        timestamp = F.one_hot(timestamp, self.step_count)
         label = F.one_hot(label, self.label_count)
 
         print(t1.shape, l1.shape, x.shape, label.shape, timestamp.shape)
