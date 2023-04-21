@@ -83,6 +83,7 @@ class UNet(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv1d(32, 1, kernel_size=9, padding=4),
         )
+        self.test = nn.Conv1d(3, 3, kernel_size=9, padding=4)
 
     def forward(self, x: Tensor, timestamp: Tensor, label: Tensor) -> Tensor:
         timestamp = timestamp.to(self.device)
@@ -107,7 +108,9 @@ class UNet(nn.Module):
         print(t1.shape, l1.shape, x.shape, label.shape, timestamp.shape)
         print(t1.device, l1.device, x.device, label.device, timestamp.device)
         x = torch.cat([t1, l1, x], 1)
-        print(x.shape)
+        print(x.shape, x.dtype)
+        x = self.test(x)
+        print(x.shape, x.dtype)
         x1 = self.down1(x)
         x2 = self.down2(torch.cat([t2, l2, self.pool(x1)], 1))
         x3 = self.down3(torch.cat([t3, l3, self.pool(x2)], 1))
