@@ -102,8 +102,9 @@ class UNet(nn.Module):
         l4 = self.sinusoidal(label, 1378)
         l5 = self.sinusoidal(label, 344)
 
-        timestamp = F.one_hot(timestamp.long(), self.step_count).view(n, 1, -1)
-        label = F.one_hot(label.long(), self.step_count).view(n, 1, -1)
+        timestamp = F.one_hot(
+            timestamp.long(), self.step_count + 1).view(n, 1, -1)
+        label = F.one_hot(label.long(), self.step_count + 1).view(n, 1, -1)
 
         print(t1.shape, l1.shape, x.shape, label.shape, timestamp.shape)
         print(t1.device, l1.device, x.device, label.device, timestamp.device)
