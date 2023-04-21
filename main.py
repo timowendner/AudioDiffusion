@@ -15,7 +15,7 @@ from diffusion import Diffusion
 from utils import save_model, load_model, save_samples
 
 
-def train_network(model, file_path, diffusion, num_epochs):
+def train_network(model, file_path, diffusion, num_epochs, model_path):
     # create the dataset
     dataset = AudioDataset(file_path, model.device,  diffusion)
     train_loader = DataLoader(dataset, batch_size=16,
@@ -55,7 +55,7 @@ def train_network(model, file_path, diffusion, num_epochs):
 
         # save the model if enough time has passed
         if abs(time.time() - start_time) >= 5*60 or epoch == num_epochs - 1:
-            save_model(model)
+            save_model(model, model_path)
             start_time = time.time()
 
         # test the model and plot a example image
@@ -88,7 +88,8 @@ def main():
 
     # train the network
     if args.train:
-        train_network(model, data_path, diffusion, num_epochs=1000)
+        train_network(model, data_path, diffusion,
+                      num_epochs=1000, model_path=model_path)
 
     # create new samples
     labels = [1, 1, 2, 3, 4, 5, 6, 7]
