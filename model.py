@@ -98,7 +98,10 @@ class UNet(nn.Module):
         l4 = self.sinusoidal(1378, label)
         l5 = self.sinusoidal(344, label)
 
-        x1 = self.down1(torch.cat([t1, l1, x], 1))
+        x = torch.cat([t1, l1, x], 1)
+        print(x.shape, x.dtype)
+
+        x1 = self.down1(x)
         x2 = self.down2(torch.cat([t2, l2, self.pool(x1)], 1))
         x3 = self.down3(torch.cat([t3, l3, self.pool(x2)], 1))
         x4 = self.down4(torch.cat([t4, l4, self.pool(x3)], 1))
