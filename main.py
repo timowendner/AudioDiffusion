@@ -64,6 +64,15 @@ def train_network(model, file_path, diffusion, num_epochs):
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Diffusion Model')
+    parser.add_argument('--train', action='store_true',
+                        help='Train the model')
+    parser.add_argument('--model2', action='store_true',
+                        help='Use model2 instead of model1')
+    args = parser.parse_args()
+
+    if args.model2:
+        from model2 import UNet
     # load the files
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     data_path = '/content/drive/MyDrive/AudioDiffusion/data'
@@ -87,7 +96,7 @@ def main():
     load_model(model, model_path)
 
     # train the network
-    if parser.train:
+    if args.train:
         train_network(model, data_path, diffusion, num_epochs=1000)
 
     # create new samples
@@ -96,12 +105,4 @@ def main():
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Diffusion Model')
-    parser.add_argument('--train', action='store_true',
-                        help='Train the model')
-    parser.add_argument('--model2', action='store_true',
-                        help='Use model2 instead of model1')
-
-    if parser.model2:
-        from model2 import UNet
     main()
