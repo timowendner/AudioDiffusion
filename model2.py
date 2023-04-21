@@ -69,7 +69,7 @@ class UNet(nn.Module):
         self.pool = nn.MaxPool1d(kernel_size=4, stride=4)
 
         self.step_embedding = embedding(step_count, 344)
-        self.label_embedding = embedding(label_count, 7)
+        self.label_embedding = embedding(label_count, 344)
 
         self.up4 = up(128 + 2, 128, pad=2)
         self.up3 = up(256, 64)
