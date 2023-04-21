@@ -50,7 +50,8 @@ class AudioDataset(Dataset):
         waveform = torch.roll(waveform, np.random.randint(waveform.shape[0]))
 
         # create the diffusion
-        timestamp = np.random.randint(1, 1000)
+        max_timestamp = self.diffusion.steps
+        timestamp = np.random.randint(1, max_timestamp)
         x_t, noise = self.diffusion(waveform, timestamp)
 
         x_t = x_t.to(self.device)
