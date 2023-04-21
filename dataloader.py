@@ -14,12 +14,12 @@ class AudioDataset(Dataset):
     def __init__(self, file_path: str, device: torch.device, diffusion: Diffusion, length=88200, sample_rate=22050, ):
         self.labels = {
             1: 'DogBark',
-            2: 'Sneeze_Cough',
-            3: 'Rain',
-            4: 'MovingMotorVehicle',
-            5: 'Keyboard',
-            6: 'GunShot',
-            7: 'Footstep',
+            # 2: 'Sneeze_Cough',
+            # 3: 'Rain',
+            # 4: 'MovingMotorVehicle',
+            # 5: 'Keyboard',
+            # 6: 'GunShot',
+            # 7: 'Footstep',
         }
         waveforms = []
         for label, folder in self.labels.items():
