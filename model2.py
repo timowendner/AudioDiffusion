@@ -105,6 +105,7 @@ class UNet(nn.Module):
         label = F.one_hot(label.long(), self.step_count).view(n, 1, -1)
 
         print(t1.shape, l1.shape, x.shape, label.shape, timestamp.shape)
+        print(t1.device, l1.device, x.device, label.device, timestamp.device)
 
         x1 = self.down1(torch.cat([t1, l1, x], 1))
         x2 = self.down2(torch.cat([t2, l2, self.pool(x1)], 1))
