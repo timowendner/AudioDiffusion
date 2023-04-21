@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 import numpy as np
+import torch.nn.functional as F
 from torch import sin, cos, pow, Tensor
 
 
@@ -50,8 +51,6 @@ def up(in_channel, out_channel, pad=0):
 
 def embedding(in_channel, out_channel):
     return nn.Sequential(
-        nn.Linear(1, in_channel),
-        nn.ReLU(inplace=True),
         nn.Linear(in_channel, out_channel),
         nn.ReLU(inplace=True),
     )
@@ -62,6 +61,8 @@ class UNet(nn.Module):
         super(UNet, self).__init__()
         self.device = device
         self.sinusoidal = Sinusoidal(device)
+        self.step_count = step_count
+        self.label_count = label_count
 
         self.down1 = dual(1, 16)
         self.down2 = dual(16, 32)
@@ -100,6 +101,9 @@ class UNet(nn.Module):
         l4 = self.sinusoidal(1378, label)
         l5 = self.sinusoidal(344, label)
 
+        step = F.one_hot(step, self.step_count)
+        label = F.one_hot(label, self.label_count)
+
         print(t1.shape, l1.shape, x.shape, label.shape, timestamp.shape)
 
         x1 = self.down1(torch.cat([t1, l1, x], 1))
@@ -108,11 +112,12 @@ class UNet(nn.Module):
         x4 = self.down4(torch.cat([t4, l4, self.pool(x3)], 1))
 
         step_embedding = self.step_embedding(timestamp)
-        step_embedding = torch.unsqueeze(step_embedding, 1)
         label_embedding = self.label_embedding(label)
-        label_embedding = torch.unsqueeze(label_embedding, 1)
+        print(step_embedding.shape, label_embedding.shape)
         out = torch.cat(
             [t5, l5, step_embedding, label_embedding, self.pool(x4)], 1)
+
+        print(out.shape)
 
         out = self.up4(out)
         out = self.up3(torch.cat([t4, l4, out, x4], 1))
