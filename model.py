@@ -85,8 +85,6 @@ class UNet(nn.Module):
         )
 
     def forward(self, x: Tensor, timestamp: Tensor, label: Tensor) -> Tensor:
-        timestamp = timestamp.to(self.device)
-        label = label.to(self.device)
 
         t1 = self.sinusoidal(88200, timestamp)
         t2 = self.sinusoidal(22050, timestamp)
