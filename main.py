@@ -4,26 +4,14 @@ from torch import nn
 from torch.utils.data import Dataset, DataLoader
 import pickle as pkl
 
-from dataloader import AudioDataset
-from model import UNet
 import datetime
 import time
 import os
+
+from model import UNet
+from dataloader import AudioDataset
 from diffusion import Diffusion
-
-
-def save_model(model):
-    # save the model with a timestamp
-    if not os.path.exists('/content/drive/MyDrive/AudioDiffusion/models'):
-        os.makedirs('/content/drive/MyDrive/AudioDiffusion/models')
-
-    # get the time now
-    time_now = datetime.datetime.now()
-    time_now = time_now.strftime("%d_%b_%H%M")
-
-    # save the model
-    filepath = f"/content/drive/MyDrive/AudioDiffusion/models/{model.name}_{time_now}.p"
-    torch.save(model.state_dict(), filepath)
+from utils import save_model, load_model, save_samples
 
 
 def train_network(model, file_path, diffusion, num_epochs):
@@ -61,6 +49,9 @@ def train_network(model, file_path, diffusion, num_epochs):
                       f'Step [{i + 1}/{total_step}]',
                       f'Loss: {loss.item():.4f}')
 
+        # add the number of epochs
+        model.epoch += 1
+
         # save the model if enough time has passed
         if abs(time.time() - start_time) >= 5*60 or epoch == num_epochs - 1:
             save_model(model)
@@ -71,47 +62,35 @@ def train_network(model, file_path, diffusion, num_epochs):
         # plot(1, loaders["train"], model, device)
 
 
-def sample(diffusion, outputpath: str, labels: list):
-    # create a new datapoint
-    x = diffusion.sample(labels)
-    x.to('cpu')
-
-    # save the data to a pickle file
-    with open(outputpath, 'wb') as f:
-        pkl.dump(x, f)
-
-
 def main():
     # load the files
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    file_path = '/content/drive/MyDrive/AudioDiffusion/data'
-    # file_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
+    data_path = '/content/drive/MyDrive/AudioDiffusion/data'
+    model_path = '/content/drive/MyDrive/AudioDiffusion/models'
+    output_path = '/content/drive/MyDrive/AudioDiffusion/output'
+    # data_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
 
     # create the model and the diffusion
     steps = 1000
     labels = 7
     model = UNet(device, steps, labels).to(device)
     model.name = 'duplex'
-    diffusion = Diffusion(model, length=88200)
+    model.epoch = 0
+    diffusion = Diffusion(model, length=88200, steps=steps)
 
-    # load a model
-    modelpath = '/content/drive/MyDrive/AudioDiffusion/models/duplex_21_Apr_1527.p'
-    model.load_state_dict(torch.load(modelpath, map_location=device))
-
+    # print the number of trainable parameters
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"Number of trainable parameters: {num_params:,}")
 
+    # load a model
+    load_model(model, model_path)
+
     # train the network
-    train_network(model, file_path, diffusion, num_epochs=1000)
+    train_network(model, data_path, diffusion, num_epochs=1000)
 
     # create new samples
-    outputpath = '/content/drive/MyDrive/AudioDiffusion/output/output3.pkl'
     labels = [1, 1, 2, 3, 4, 5, 6, 7]
-    sample(diffusion, outputpath, labels)
-
-    # # load the data from the pickle file
-    # with open('data.pkl', 'rb') as f:
-    #     loaded_data = pkl.load(f)
+    save_samples(diffusion, output_path, labels)
 
 
 if __name__ == '__main__':

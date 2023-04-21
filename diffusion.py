@@ -27,11 +27,10 @@ class Diffusion(nn.Module):
         noise = torch.randn_like(x)
         x_t = sqrt(self.alpha_hat[t]) * x + sqrt(1 - self.alpha_hat[t]) * noise
 
-        # clamp the tensor and compute the noise distribution
         return x_t, noise
 
     @torch.no_grad()
-    def sample(self, labels: list):
+    def sample(self, labels: list, loop=1):
         n = len(labels)
         model = self.model
         model.eval()
@@ -44,7 +43,7 @@ class Diffusion(nn.Module):
 
         # loop through all timesteps
         for i in range(1, self.steps):
-            for j in range(2):
+            for j in range(loop):
                 # define the needed variables
                 t = torch.ones(n, device=model.device).long() * \
                     (self.steps - i)
@@ -65,11 +64,9 @@ class Diffusion(nn.Module):
 
                 x = 1 / sqrt(alpha) * (x - ((1 - alpha) / (sqrt(1 - alpha_hat)))
                                        * predicted_noise) + sqrt(beta) * noise
-                # x = x.clamp(-1, 1)
 
-            if i % 100 == 0:
-                print(f'Step [{i}/{self.steps}]')
+        if i % 100 == 0:
+            print(f'Step [{i}/{self.steps}]')
 
-        # x = x.clamp(-1, 1)
         model.train()
         return x
