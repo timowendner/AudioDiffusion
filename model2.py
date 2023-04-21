@@ -103,7 +103,7 @@ class UNet(nn.Module):
         l5 = self.sinusoidal(label, 344)
 
         timestamp = F.one_hot(timestamp.long(), self.step_count + 1)
-        timestamp = timestamp.view(n, 1, -1).float32()
+        timestamp = timestamp.view(n, 1, -1).type(torch.float32)
         label = F.one_hot(label.long(), self.step_count + 1)
         label = label.view(n, 1, -1).float(32)
 
