@@ -24,7 +24,7 @@ class Sinusoidal(nn.Module):
 def dual(in_channel, out_channel):
     return nn.Sequential(
         nn.Conv1d(in_channel + 2, out_channel, kernel_size=9, padding=4),
-        nn.Dropout(p=0.1),
+        # nn.Dropout(p=0.1),
         nn.ReLU(inplace=True),
         nn.Conv1d(out_channel, out_channel, kernel_size=9, padding=4),
         nn.BatchNorm1d(out_channel),
