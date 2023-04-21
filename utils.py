@@ -50,6 +50,9 @@ def load_model(empty_model, modelpath, specific_model=None):
     files = [f for f in os.listdir(modelpath) if isfile(join(modelpath, f))]
     files = [f for f in files if f[:len(empty_model)] == empty_model]
 
+    if len(files) == 0:
+        return None
+
     # sort files based on modification time
     files = sorted(files, key=lambda f: getmtime(join(modelpath, f)))
 
