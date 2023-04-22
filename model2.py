@@ -24,7 +24,7 @@ class Sinusoidal(nn.Module):
 def dual(in_channel, out_channel):
     return nn.Sequential(
         nn.Conv1d(in_channel + 2, out_channel, kernel_size=9, padding=4),
-        # nn.Dropout(p=0.1),
+        nn.Dropout(p=0.1),
         nn.ReLU(inplace=True),
         nn.Conv1d(out_channel, out_channel, kernel_size=9, padding=4),
         nn.BatchNorm1d(out_channel),
@@ -35,7 +35,7 @@ def dual(in_channel, out_channel):
 def up(in_channel, out_channel, pad=0):
     return nn.Sequential(
         nn.Conv1d(in_channel + 2, in_channel, kernel_size=9, padding=4),
-        # nn.Dropout(p=0.1),
+        nn.Dropout(p=0.1),
         nn.ReLU(inplace=True),
         nn.Conv1d(in_channel, out_channel, kernel_size=9, padding=4),
         nn.ReLU(inplace=True),
@@ -61,23 +61,25 @@ class UNet(nn.Module):
         self.step_count = step_count
         self.label_count = label_count
 
-        self.down1 = dual(1, 16)
-        self.down2 = dual(16, 32)
-        self.down3 = dual(32, 64)
-        self.down4 = dual(64, 128)
+        c1, c2, c3, c4 = 24, 48, 96, 192
+
+        self.down1 = dual(1, c1)
+        self.down2 = dual(c1, c2)
+        self.down3 = dual(c2, c3)
+        self.down4 = dual(c3, c4)
 
         self.pool = nn.MaxPool1d(kernel_size=4, stride=4)
 
         self.step_embedding = embedding(step_count, 344)
         self.label_embedding = embedding(label_count, 344)
 
-        self.up4 = up(128 + 2, 128, pad=2)
-        self.up3 = up(256, 64)
-        self.up2 = up(128, 32, pad=2)
-        self.up1 = up(64, 16)
+        self.up4 = up(c4 + 2, c4, pad=2)
+        self.up3 = up(c4*2, c3)
+        self.up2 = up(c3*2, c2, pad=2)
+        self.up1 = up(c2*2, c1)
 
         self.output = nn.Sequential(
-            nn.Conv1d(32 + 2, 64, kernel_size=9, padding=4),
+            nn.Conv1d(c1*2 + 2, 64, kernel_size=9, padding=4),
             nn.ReLU(inplace=True),
             nn.Conv1d(64, 32, kernel_size=9, padding=4),
             nn.ReLU(inplace=True),
