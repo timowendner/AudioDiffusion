@@ -93,7 +93,7 @@ def main():
         train_network(model, diffusion, path, num_epochs=1000)
 
     # create new samples
-    labels = [1] * 100
+    labels = [args.label] * 100
     save_samples(diffusion, path, labels, loop=2)
 
 
@@ -103,6 +103,7 @@ if __name__ == '__main__':
                         help='Train the model')
     parser.add_argument('--model2', action='store_true',
                         help='Use model2 instead of model1')
+    parser.add_argument('--label', type=int, help='Label to sample')
     args = parser.parse_args()
 
     if args.model2:
