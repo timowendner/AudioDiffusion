@@ -93,7 +93,7 @@ def main():
         train_network(model, diffusion, path, num_epochs=1000)
 
     # create new samples
-    labels = [4] * 100
+    labels = [1] * 100
     save_samples(diffusion, path, labels, loop=2)
 
 
