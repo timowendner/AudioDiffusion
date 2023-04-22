@@ -94,7 +94,7 @@ def main():
 
     # create new samples
     labels = [1, 1, 2, 3, 4, 5, 6, 7]
-    save_samples(diffusion, path, labels, loop=3)
+    save_samples(diffusion, path, labels, loop=1)
 
 
 if __name__ == '__main__':
