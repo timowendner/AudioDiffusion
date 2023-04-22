@@ -12,12 +12,12 @@ import os
 from model import UNet
 from dataloader import AudioDataset
 from diffusion import Diffusion
-from utils import save_model, load_model, save_samples
+from utils import save_model, load_model, save_samples, Path
 
 
-def train_network(model, file_path, diffusion, num_epochs, model_path):
+def train_network(model, diffusion, path, num_epochs):
     # create the dataset
-    dataset = AudioDataset(file_path, model.device,  diffusion)
+    dataset = AudioDataset(path.data, model.device,  diffusion)
     train_loader = DataLoader(dataset, batch_size=16,
                               shuffle=True, num_workers=0)
     # Train the model
@@ -55,7 +55,7 @@ def train_network(model, file_path, diffusion, num_epochs, model_path):
 
         # save the model if enough time has passed
         if abs(time.time() - start_time) >= 5*60 or epoch == num_epochs - 1:
-            save_model(model, model_path)
+            save_model(model, path.model)
             start_time = time.time()
 
         # test the model and plot a example image
@@ -66,9 +66,11 @@ def train_network(model, file_path, diffusion, num_epochs, model_path):
 def main():
     # load the files
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    data_path = '/content/drive/MyDrive/AudioDiffusion/data'
-    model_path = '/content/drive/MyDrive/AudioDiffusion/models'
-    output_path = '/content/drive/MyDrive/AudioDiffusion/output'
+    path = Path(
+        data_path='/content/drive/MyDrive/AudioDiffusion/data',
+        model_path='/content/drive/MyDrive/AudioDiffusion/models',
+        output_path='/content/drive/MyDrive/AudioDiffusion/output',
+    )
     # data_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
 
     # create the model and the diffusion
@@ -84,16 +86,15 @@ def main():
     print(f"Number of trainable parameters: {num_params:,}")
 
     # load a model
-    load_model(model, model_path)
+    load_model(model, path)
 
     # train the network
     if args.train:
-        train_network(model, data_path, diffusion,
-                      num_epochs=1000, model_path=model_path)
+        train_network(model, diffusion, path, num_epochs=1000)
 
     # create new samples
     labels = [1, 1, 2, 3, 4, 5, 6, 7]
-    save_samples(diffusion, output_path, labels)
+    save_samples(diffusion, path, labels)
 
 
 if __name__ == '__main__':

@@ -43,7 +43,7 @@ class Diffusion(nn.Module):
 
         # loop through all timesteps
         for i in range(1, self.steps):
-            for j in range(loop):
+            for _ in range(loop):
                 # define the needed variables
                 t = torch.ones(n, device=model.device).long() * \
                     (self.steps - i)
@@ -65,7 +65,7 @@ class Diffusion(nn.Module):
                 x = 1 / sqrt(alpha) * (x - ((1 - alpha) / (sqrt(1 - alpha_hat)))
                                        * predicted_noise) + sqrt(beta) * noise
 
-        if i % 100 == 0:
+        if i % (self.steps // 10) == 0:
             print(f'Step [{i}/{self.steps}]')
 
         model.train()
