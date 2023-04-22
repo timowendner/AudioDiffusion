@@ -24,7 +24,7 @@ def train_network(model, diffusion, path, num_epochs):
     model.train()
     total_step = len(train_loader)
     mse = torch.nn.MSELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.00025)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
     start_time = time.time()
     for epoch in range(num_epochs):
