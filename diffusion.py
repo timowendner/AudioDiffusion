@@ -64,8 +64,8 @@ class Diffusion(nn.Module):
                 x = 1 / sqrt(alpha) * (x - ((1 - alpha) / (sqrt(1 - alpha_hat)))
                                        * predicted_noise) + sqrt(beta) * noise
 
-        if i % (self.steps // 10) == 0:
-            print(f'Step [{i}/{self.steps}]')
+            if i % (self.steps // 10) == 0:
+                print(f'Step [{i}/{self.steps}]')
 
         model.train()
         return x
