@@ -49,8 +49,7 @@ def load_model(empty_model, path, specific_model=None):
 
     files = []
     for f in os.listdir(path.model):
-        f = str(f)
-        if isfile(join(path.model, f)) and f[:len(empty_model)] == empty_model.name:
+        if isfile(join(path.model, f)) and f[:len(empty_model.name)] == empty_model.name:
             files.append(join(path.model, f))
 
     if len(files) == 0:
