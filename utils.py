@@ -19,11 +19,11 @@ def save_model(model, path):
     torch.save(model.state_dict(), filepath)
 
 
-def save_samples(diffusion, path, labels: list):
+def save_samples(diffusion, path, labels: list, loop=1):
     if not os.path.exists(path.output):
         os.makedirs(path.output)
     # create a new datapoint
-    x = diffusion.sample(labels, loop=10)
+    x = diffusion.sample(labels, loop=loop)
     x.to('cpu')
 
     # get the time now
@@ -35,7 +35,7 @@ def save_samples(diffusion, path, labels: list):
         path.output, f'output_{diffusion.model.name}_{time_now}.pkl')
 
     # save the data to a pickle file
-    with open(time_now, 'wb') as f:
+    with open(filepath, 'wb') as f:
         pkl.dump(x, f)
 
 
