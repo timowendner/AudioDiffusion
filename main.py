@@ -24,7 +24,7 @@ def train_network(model, diffusion, path, num_epochs):
     model.train()
     total_step = len(train_loader)
     mse = torch.nn.MSELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.00025)
 
     start_time = time.time()
     for epoch in range(num_epochs):
@@ -83,7 +83,8 @@ def main():
 
     # print the number of trainable parameters
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(f"Number of trainable parameters: {num_params:,}")
+    print(
+        f"Number of trainable parameters: {num_params:,}, current Epochs: {model.epoch}")
 
     # load a model
     load_model(model, path)
