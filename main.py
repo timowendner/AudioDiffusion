@@ -83,8 +83,7 @@ def main():
 
     # print the number of trainable parameters
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(
-        f"Number of trainable parameters: {num_params:,}, current Epochs: {model.epoch}")
+    print(f"Number of trainable parameters: {num_params:,}")
 
     # load a model
     load_model(model, path)
@@ -94,7 +93,7 @@ def main():
         train_network(model, diffusion, path, num_epochs=1000)
 
     # create new samples
-    labels = [1, 1, 2, 3, 4, 5, 6, 7]
+    labels = [1] * 100
     save_samples(diffusion, path, labels, loop=3)
 
 
