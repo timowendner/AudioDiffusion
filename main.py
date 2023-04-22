@@ -55,7 +55,7 @@ def train_network(model, diffusion, path, num_epochs):
 
         # save the model if enough time has passed
         if abs(time.time() - start_time) >= 5*60 or epoch == num_epochs - 1:
-            save_model(model, path.model)
+            save_model(model, path)
             start_time = time.time()
 
         # test the model and plot a example image

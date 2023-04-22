@@ -23,7 +23,7 @@ def save_samples(diffusion, path, labels: list):
     if not os.path.exists(path.output):
         os.makedirs(path.output)
     # create a new datapoint
-    x = diffusion.sample(labels)
+    x = diffusion.sample(labels, loop=10)
     x.to('cpu')
 
     # get the time now
@@ -31,7 +31,8 @@ def save_samples(diffusion, path, labels: list):
     time_now = time_now.strftime("%d%b_%H%M")
 
     # create the filepath
-    filepath = join(path.output, f'output_{diffusion.model.name}_{time_now}')
+    filepath = join(
+        path.output, f'output_{diffusion.model.name}_{time_now}.pkl')
 
     # save the data to a pickle file
     with open(time_now, 'wb') as f:
