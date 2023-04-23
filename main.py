@@ -94,7 +94,7 @@ def main():
 
     # create new samples
     labels = [args.label] * 100
-    save_samples(diffusion, path, labels, loop=2)
+    save_samples(diffusion, path, labels, loop=args.loop)
 
 
 if __name__ == '__main__':
@@ -103,7 +103,9 @@ if __name__ == '__main__':
                         help='Train the model')
     parser.add_argument('--model2', action='store_true',
                         help='Use model2 instead of model1')
-    parser.add_argument('--label', type=int, help='Label to sample')
+    parser.add_argument('--label', type=int, default=1, help='Label to sample')
+    parser.add_argument('--loop', type=int, default=1,
+                        help='How often the diffusion should happen')
     args = parser.parse_args()
 
     if args.model2:
