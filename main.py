@@ -81,7 +81,7 @@ def main():
         },
     )
     if args.model == 3:
-        path.label = {1: 'DogBark'}
+        path.labels = {1: 'DogBark'}
     # data_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
 
     # create the model and the diffusion

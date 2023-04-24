@@ -68,4 +68,4 @@ class Path:
         self.model = model_path
         self.output = output_path
         self.data = data_path
-        self.label = label_path
+        self.labels = label_path
