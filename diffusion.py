@@ -13,8 +13,8 @@ class Diffusion(nn.Module):
         self.length = length
 
         start = 0
-        end = 0.15
-        a = 1.4
+        end = 0.175
+        a = 1.3
 
         t = torch.linspace(0, 1, steps, device=model.device)
         self.beta = start + (end - start) * 1 / \
@@ -27,8 +27,8 @@ class Diffusion(nn.Module):
         noise = torch.randn_like(x)
         x_t = sqrt(self.alpha_hat[t]) * x + sqrt(1 - self.alpha_hat[t]) * noise
 
-        r = np.random.normal(1, 0.035)
-        return x_t * r, noise * r
+        # r = np.random.normal(1, 0.035)
+        return x_t, noise
 
     @torch.no_grad()
     def sample(self, labels: list, loop=1):
@@ -39,7 +39,8 @@ class Diffusion(nn.Module):
         # create a noise array that we want to denoise
         x = torch.randn(n, 1, self.length, device=model.device)
         l = torch.tensor(labels, device=model.device).view(-1, 1)
-        # l = torch.ones(n, device=model.device) * label
+
+        print('Start creating Samples')
 
         # loop through all timesteps
         for i in range(1, self.steps):
