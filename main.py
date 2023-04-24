@@ -92,20 +92,20 @@ def main():
     model.epoch = 0
     diffusion = Diffusion(model, length=88200, steps=steps)
 
-    # print the number of trainable parameters
-    num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(f"Number of trainable parameters: {num_params:,}")
-
     # load a model
     load_model(model, path)
+
+    # print the number of trainable parameters
+    num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    print(
+        f"Number of trainable parameters: {num_params:,}, with epoch {model.epoch}")
 
     # train the network
     if args.train:
         train_network(model, diffusion, path, num_epochs=1000)
 
     # create new samples
-    labels = [args.label] * 100
-    save_samples(diffusion, path, labels, loop=args.loop)
+    save_samples(diffusion, path, args.label, args.count, loop=args.loop)
 
 
 if __name__ == '__main__':
@@ -115,6 +115,8 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=int, default=1,
                         help='choose the model')
     parser.add_argument('--label', type=int, default=1, help='Label to sample')
+    parser.add_argument('--count', type=int, default=1,
+                        help='How many samples to create')
     parser.add_argument('--loop', type=int, default=1,
                         help='How often the diffusion should happen')
     args = parser.parse_args()

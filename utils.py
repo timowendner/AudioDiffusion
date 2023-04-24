@@ -2,6 +2,8 @@ import torch
 import os
 import datetime
 import pickle as pkl
+import numpy as np
+from scipy.io.wavfile import write
 
 from os.path import join, isfile, getmtime
 
@@ -19,24 +21,41 @@ def save_model(model, path):
     torch.save(model.state_dict(), filepath)
 
 
-def save_samples(diffusion, path, labels: list, loop=1):
+def save_samples(diffusion, path, label, count, loop=1):
     if not os.path.exists(path.output):
         os.makedirs(path.output)
     # create a new datapoint
-    x = diffusion.sample(labels, loop=loop)
-    x.to('cpu')
+    output = diffusion.sample([label] * count, loop=loop)
+    output.to('cpu')
 
     # get the time now
     time_now = datetime.datetime.now()
     time_now = time_now.strftime("%d%b_%H%M")
 
-    # create the filepath
-    filepath = join(
-        path.output, f'output_{diffusion.model.name}_{time_now}.pkl')
+    # foldernames
+    foldernames = {
+        1: 'dog_bark',
+        2: 'sneeze_cough',
+        3: 'rain',
+        4: 'moving_motor_vehicle',
+        5: 'keyboard',
+        6: 'gunshot',
+        7: 'footstep',
+    }
 
-    # save the data to a pickle file
-    with open(filepath, 'wb') as f:
-        pkl.dump(x, f)
+    # remove the current wav
+    folderpath = join(path.output, foldernames[label])
+    if not os.path.exists(folderpath):
+        os.makedirs(folderpath)
+    for f in os.listdir(folderpath):
+        os.remove(join(folderpath, f))
+
+    for i, data in enumerate(output):
+        data = data[0, :].numpy()
+        data = data / np.max(data) * 0.9
+        scaled = np.int16(data * 32767)
+        name = f'{output[:-4]}_{time_now}_{i:2}.wav'
+        write(join(folderpath, name), 22050, scaled)
 
 
 def load_model(empty_model, path, specific_model=None):
