@@ -71,7 +71,7 @@ def load_model(path):
     if len(files) == 0:
         return None
 
-    with open(files[-1], 'wb') as f:
+    with open(files[-1], 'rb') as f:
         model = pkl.load(f)
     return model
 
