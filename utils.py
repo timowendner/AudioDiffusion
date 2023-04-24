@@ -18,7 +18,8 @@ def save_model(model, path):
 
     # save the model
     filepath = join(path.model, f"{model.name}_{time_now}.p")
-    pkl.dump(model, filepath)
+    with open(filepath, 'wb') as f:
+        pkl.dump(model, f)
 
 
 def save_samples(diffusion, path, label, count, loop=1):
@@ -70,7 +71,8 @@ def load_model(path):
     if len(files) == 0:
         return None
 
-    model = pkl.load(files[-1])
+    with open(files[-1], 'wb') as f:
+        model = pkl.load(f)
     return model
 
 
