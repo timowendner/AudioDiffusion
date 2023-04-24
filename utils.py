@@ -26,7 +26,7 @@ def save_samples(diffusion, path, label, count, loop=1):
         os.makedirs(path.output)
     # create a new datapoint
     output = diffusion.sample([label] * count, loop=loop)
-    output.to('cpu')
+    output = output.to('cpu')
 
     # get the time now
     time_now = datetime.datetime.now()
