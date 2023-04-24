@@ -11,10 +11,9 @@ from diffusion import Diffusion
 
 
 class AudioDataset(Dataset):
-    def __init__(self, path: str, device: torch.device, diffusion: Diffusion, length=88200, sample_rate=22050, ):
-        self.labels = path.labels
+    def __init__(self, path, device: torch.device, diffusion: Diffusion, length=88200, sample_rate=22050, ):
         waveforms = []
-        for label, folder in self.labels.items():
+        for label, folder in path.labels.items():
             dir_path = os.path.join(path.data, folder)
             files = glob.glob(os.path.join(dir_path, "*.wav"))
             for path in files:
