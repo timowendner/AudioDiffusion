@@ -78,6 +78,7 @@ def main():
             6: 'GunShot',
             7: 'Footstep',
         },
+        label_train={1},
         label_count=7,
         step_count=100,
         lr=0.001,

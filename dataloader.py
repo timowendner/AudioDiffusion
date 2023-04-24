@@ -14,6 +14,8 @@ class AudioDataset(Dataset):
     def __init__(self, config, device: torch.device, diffusion: Diffusion, length=88200, sample_rate=22050, ):
         waveforms = []
         for label, folder in config.labels.items():
+            if label not in config.label_train:
+                continue
             dir_path = os.path.join(config.data, folder)
             files = glob.glob(os.path.join(dir_path, "*.wav"))
             for path in files:

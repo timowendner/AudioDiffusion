@@ -77,11 +77,12 @@ def load_model(config):
 
 
 class Config:
-    def __init__(self, model_path, data_path, output_path, label_path, step_count, label_count, lr) -> None:
+    def __init__(self, model_path, data_path, output_path, label_path, label_train, step_count, label_count, lr) -> None:
         self.model = model_path
         self.output = output_path
         self.data = data_path
         self.labels = label_path
+        self.label_train = label_train
         self.step_count = step_count
         self.label_count = label_count
         self.lr = lr
