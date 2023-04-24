@@ -12,8 +12,8 @@ class Diffusion(nn.Module):
         self.steps = steps
         self.length = length
 
-        start = 0
-        end = 0.175
+        start = 0.002
+        end = 0.2
         a = 1.3
 
         t = torch.linspace(0, 1, steps, device=model.device)
