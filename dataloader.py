@@ -11,10 +11,10 @@ from diffusion import Diffusion
 
 
 class AudioDataset(Dataset):
-    def __init__(self, path, device: torch.device, diffusion: Diffusion, length=88200, sample_rate=22050, ):
+    def __init__(self, config, device: torch.device, diffusion: Diffusion, length=88200, sample_rate=22050, ):
         waveforms = []
-        for label, folder in path.labels.items():
-            dir_path = os.path.join(path.data, folder)
+        for label, folder in config.labels.items():
+            dir_path = os.path.join(config.data, folder)
             files = glob.glob(os.path.join(dir_path, "*.wav"))
             for path in files:
                 waveform, sr = torchaudio.load(path)

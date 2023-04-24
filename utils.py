@@ -5,26 +5,26 @@ import pickle as pkl
 import numpy as np
 from scipy.io.wavfile import write
 
-from os.path import join, isfile, getmtime
+from os.path import join, isfile, getmtime, exists
 
 
-def save_model(model, path):
-    if not os.path.exists(path.model):
-        os.makedirs(path.model)
+def save_model(model, config):
+    if not exists(config.model):
+        os.makedirs(config.model)
 
     # get the time now
     time_now = datetime.datetime.now()
     time_now = time_now.strftime("%d%b_%H%M")
 
     # save the model
-    filepath = join(path.model, f"{model.name}_{time_now}.p")
+    filepath = join(config.model, f"{model.name}_{time_now}.p")
     with open(filepath, 'wb') as f:
         pkl.dump(model, f)
 
 
-def save_samples(diffusion, path, label, count, loop=1):
-    if not os.path.exists(path.output):
-        os.makedirs(path.output)
+def save_samples(diffusion, config, label, count, loop=1):
+    if not exists(config.output):
+        os.makedirs(config.output)
     # create a new datapoint
     output = diffusion.sample([label] * count, loop=loop)
     output = output.to('cpu')
@@ -45,8 +45,8 @@ def save_samples(diffusion, path, label, count, loop=1):
     }
 
     # remove the current wav
-    folderpath = join(path.output, foldernames[label])
-    if not os.path.exists(folderpath):
+    folderpath = join(config.output, foldernames[label])
+    if not exists(folderpath):
         os.makedirs(folderpath)
     for f in os.listdir(folderpath):
         os.remove(join(folderpath, f))
@@ -59,13 +59,13 @@ def save_samples(diffusion, path, label, count, loop=1):
         write(join(folderpath, name), 22050, scaled)
 
 
-def load_model(path):
-    if not os.path.exists(path.model):
-        os.makedirs(path.model)
+def load_model(config):
+    if not exists(config.model):
+        os.makedirs(config.model)
         return None
 
-    files = [join(path.model, f) for f in os.listdir(
-        path.model) if isfile(join(path.model, f))]
+    files = [join(config.model, f) for f in os.listdir(
+        config.model) if isfile(join(config.model, f))]
     files = sorted(files, key=getmtime)
 
     if len(files) == 0:
@@ -76,9 +76,12 @@ def load_model(path):
     return model
 
 
-class Path:
-    def __init__(self, model_path, data_path, output_path, label_path) -> None:
+class Config:
+    def __init__(self, model_path, data_path, output_path, label_path, step_count, label_count, lr) -> None:
         self.model = model_path
         self.output = output_path
         self.data = data_path
         self.labels = label_path
+        self.step_count = step_count
+        self.label_count = label_count
+        self.lr = lr

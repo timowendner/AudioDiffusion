@@ -12,19 +12,19 @@ import os
 from model import UNet
 from dataloader import AudioDataset
 from diffusion import Diffusion
-from utils import save_model, load_model, save_samples, Path
+from utils import save_model, load_model, save_samples, Config
 
 
-def train_network(model, diffusion, path, num_epochs):
+def train_network(model, diffusion, config, num_epochs):
     # create the dataset
-    dataset = AudioDataset(path, model.device,  diffusion)
+    dataset = AudioDataset(config, model.device,  diffusion)
     train_loader = DataLoader(dataset, batch_size=16,
                               shuffle=True, num_workers=0)
     # Train the model
     model.train()
     total_step = len(train_loader)
     mse = torch.nn.MSELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
 
     start_time = time.time()
     for epoch in range(num_epochs):
@@ -54,7 +54,7 @@ def train_network(model, diffusion, path, num_epochs):
 
         # save the model if enough time has passed
         if abs(time.time() - start_time) >= 5*60 or epoch == num_epochs - 1:
-            save_model(model, path)
+            save_model(model, config)
             start_time = time.time()
 
         # test the model and plot a example image
@@ -65,7 +65,7 @@ def train_network(model, diffusion, path, num_epochs):
 def main():
     # load the files
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    path = Path(
+    config = Config(
         data_path='/content/drive/MyDrive/AudioDiffusion/data',
         model_path='/content/drive/MyDrive/AudioDiffusion/models',
         output_path='/content/drive/MyDrive/AudioDiffusion/output',
@@ -78,22 +78,23 @@ def main():
             6: 'GunShot',
             7: 'Footstep',
         },
+        label_count=7,
+        step_count=100,
+        lr=0.001,
     )
     if args.model == 3:
-        path.labels = {1: 'DogBark'}
-    # data_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
+        config.labels = {1: 'DogBark'}
+    # data_config = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
 
     # create the model and the diffusion
-    steps = 100
-    labels = 7
-    model = UNet(device, steps, labels).to(device)
+    model = UNet(device, config).to(device)
     model.name = 'aperture'
     model.epoch = 0
-    diffusion = Diffusion(model, length=88200, steps=steps)
+    diffusion = Diffusion(model, length=88200, steps=config.step_count)
 
     # load a model
     if args.load:
-        model = load_model(path)
+        model = load_model(config)
 
     # print the number of trainable parameters
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -102,10 +103,10 @@ def main():
 
     # train the network
     if args.train:
-        train_network(model, diffusion, path, num_epochs=1000)
+        train_network(model, diffusion, config, num_epochs=1000)
 
     # create new samples
-    save_samples(diffusion, path, args.label, args.count, loop=args.loop)
+    save_samples(diffusion, config, args.label, args.count, loop=args.loop)
 
 
 if __name__ == '__main__':
