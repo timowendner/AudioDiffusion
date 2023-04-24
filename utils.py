@@ -18,7 +18,7 @@ def save_model(model, path):
 
     # save the model
     filepath = join(path.model, f"{model.name}_{time_now}.p")
-    torch.save(model.state_dict(), filepath)
+    pkl.dump(model, filepath)
 
 
 def save_samples(diffusion, path, label, count, loop=1):
@@ -58,28 +58,20 @@ def save_samples(diffusion, path, label, count, loop=1):
         write(join(folderpath, name), 22050, scaled)
 
 
-def load_model(empty_model, path, specific_model=None):
+def load_model(path):
     if not os.path.exists(path.model):
         os.makedirs(path.model)
         return None
 
-    if specific_model is not None:
-        empty_model.load_state_dict(torch.load(
-            join(path.model, specific_model), map_location=empty_model.device))
-
-    files = []
-    for f in os.listdir(path.model):
-        if isfile(join(path.model, f)) and f[:len(empty_model.name)] == empty_model.name:
-            files.append(join(path.model, f))
+    files = [join(path.model, f) for f in os.listdir(
+        path.model) if isfile(join(path.model, f))]
+    files = sorted(files, key=getmtime)
 
     if len(files) == 0:
         return None
 
-    # sort files based on modification time
-    files = sorted(files, key=lambda f: getmtime(f))
-
-    empty_model.load_state_dict(torch.load(
-        files[-1], map_location=empty_model.device))
+    model = pkl.load(files[-1])
+    return model
 
 
 class Path:

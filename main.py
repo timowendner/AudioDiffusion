@@ -43,7 +43,6 @@ def train_network(model, diffusion, path, num_epochs):
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            # nn.utils.clip_grad_norm_(model.parameters(), 0.001)
 
             if (i + 1) % 50 == 0:
                 print(f'Epoch [{epoch + 1}/{num_epochs}]',
@@ -90,10 +89,11 @@ def main():
     model = UNet(device, steps, labels).to(device)
     model.name = 'aperture'
     model.epoch = 0
-    diffusion = Diffusion(model, length=88200, steps=steps)
+    diffusion = Diffusion(model, beta_start=1e-6,
+                          beta_end=0.1, length=88200, steps=steps)
 
     # load a model
-    load_model(model, path)
+    model = load_model(path)
 
     # print the number of trainable parameters
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
