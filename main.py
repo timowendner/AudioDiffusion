@@ -15,9 +15,9 @@ from diffusion import Diffusion
 from utils import save_model, load_model, save_samples, Config
 
 
-def train_network(model, diffusion, config, num_epochs):
+def train_network(model, diffusion, config):
     # create the dataset
-    dataset = AudioDataset(config, model.device,  diffusion)
+    dataset = AudioDataset(diffusion, config, model.device)
     train_loader = DataLoader(dataset, batch_size=16,
                               shuffle=True, num_workers=0)
     # Train the model
@@ -27,11 +27,11 @@ def train_network(model, diffusion, config, num_epochs):
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
 
     start_time = time.time()
-    for epoch in range(num_epochs):
+    for epoch in range(config.num_epochs):
         # print the epoch and current time
         time_now = datetime.datetime.now()
         time_now = time_now.strftime("%H:%M")
-        print(f"Start Epoch: {epoch + 1}/{num_epochs}   {time_now}")
+        print(f"Start Epoch: {epoch + 1}/{config.num_epochs}   {time_now}")
 
         # loop through the training loader
         for i, (model_input, targets, t, labels) in enumerate(train_loader):
@@ -45,7 +45,7 @@ def train_network(model, diffusion, config, num_epochs):
             optimizer.step()
 
             if (i + 1) % 50 == 0:
-                print(f'Epoch [{epoch + 1}/{num_epochs}]',
+                print(f'Epoch [{epoch + 1}/{config.num_epochs}]',
                       f'Step [{i + 1}/{total_step}]',
                       f'Loss: {loss.item():.4f}')
 
@@ -53,7 +53,7 @@ def train_network(model, diffusion, config, num_epochs):
         model.epoch += 1
 
         # save the model if enough time has passed
-        if abs(time.time() - start_time) >= 5*60 or epoch == num_epochs - 1:
+        if abs(time.time() - start_time) >= 5*60 or epoch == config.num_epochs - 1:
             save_model(model, config)
             start_time = time.time()
 
@@ -71,20 +71,26 @@ def main():
         output_path='/content/drive/MyDrive/AudioDiffusion/output',
         label_path={
             1: 'DogBark',
-            2: 'Sneeze_Cough',
-            3: 'Rain',
-            4: 'MovingMotorVehicle',
-            5: 'Keyboard',
-            6: 'GunShot',
-            7: 'Footstep',
+            2: 'Footstep',
+            3: 'GunShot',
+            4: 'Keyboard',
+            5: 'MovingMotorVehicle',
+            6: 'Rain',
+            7: 'Sneeze_Cough',
         },
-        label_train={1},
+        label_train={1, },
         label_count=7,
         step_count=100,
         lr=0.001,
+        create_loop=args.loop,
+        create_label=args.label,
+        create_count=args.count,
+        num_epochs=1000,
+        audio_length=88200,
+        beta_start=1e-4,
+        beta_end=0.02,
+        beta_sigmoid=0.15,
     )
-    if args.model == 3:
-        config.labels = {1: 'DogBark'}
     # data_config = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
 
     # create the model and the diffusion
@@ -104,10 +110,10 @@ def main():
 
     # train the network
     if args.train:
-        train_network(model, diffusion, config, num_epochs=1000)
+        train_network(model, diffusion, config)
 
     # create new samples
-    save_samples(diffusion, config, args.label, args.count, loop=args.loop)
+    save_samples(diffusion, config)
 
 
 if __name__ == '__main__':

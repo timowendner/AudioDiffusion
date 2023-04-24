@@ -11,7 +11,7 @@ from diffusion import Diffusion
 
 
 class AudioDataset(Dataset):
-    def __init__(self, config, device: torch.device, diffusion: Diffusion, length=88200, sample_rate=22050, ):
+    def __init__(self, diffusion: Diffusion, config, device: torch.device):
         waveforms = []
         for label, folder in config.labels.items():
             if label not in config.label_train:
@@ -24,9 +24,8 @@ class AudioDataset(Dataset):
                 waveforms.append((label, waveform))
 
         self.waveforms = waveforms
-        self.sample_rate = sample_rate
         self.device = device
-        self.length = length
+        self.length = config.audio_length
         self.diffusion = diffusion
 
     def __len__(self):

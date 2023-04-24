@@ -5,18 +5,18 @@ import numpy as np
 
 
 class Diffusion(nn.Module):
-    def __init__(self, model, steps=1000, length=88200) -> None:
+    def __init__(self, model, config) -> None:
         super(Diffusion, self).__init__()
         self.model = model
 
-        self.steps = steps
-        self.length = length
+        self.steps = config.step_count
+        self.length = config.audio_length
 
-        start = 0.0001
-        end = 0.02
-        a = 0.15
+        start = config.beta_start
+        end = config.beta_end
+        a = config.beta_sigmoid
 
-        t = torch.linspace(0, 1, steps, device=model.device)
+        t = torch.linspace(0, 1, self.steps, device=model.device)
         self.beta = start + (end - start) * 1 / \
             (1 + np.e ** -(a/(end - start)*(t - start-0.5)))
         # self.beta = torch.linspace(start, end, steps, device=model.device)
@@ -32,8 +32,9 @@ class Diffusion(nn.Module):
         return x_t, noise
 
     @torch.no_grad()
-    def sample(self, labels: list, loop=1):
-        n = len(labels)
+    def sample(self, config):
+        n = config.create_count
+        labels = [config.create_label + 1] * n
         model = self.model
         model.eval()
 
@@ -45,7 +46,7 @@ class Diffusion(nn.Module):
 
         # loop through all timesteps
         for i in range(1, self.steps):
-            for _ in range(loop):
+            for _ in range(config.create_loop):
                 # define the needed variables
                 t = torch.ones(n, device=model.device).long() * \
                     (self.steps - i)
