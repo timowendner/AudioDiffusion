@@ -97,7 +97,7 @@ def main():
     model = UNet(device, config).to(device)
     model.name = 'aperture'
     model.epoch = 0
-    diffusion = Diffusion(model, length=88200, steps=config.step_count)
+    diffusion = Diffusion(model, config)
 
     # load a model
     if args.load:
