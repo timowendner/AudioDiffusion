@@ -17,7 +17,7 @@ from utils import save_model, load_model, save_samples, Path
 
 def train_network(model, diffusion, path, num_epochs):
     # create the dataset
-    dataset = AudioDataset(path.data, model.device,  diffusion)
+    dataset = AudioDataset(path, model.device,  diffusion)
     train_loader = DataLoader(dataset, batch_size=16,
                               shuffle=True, num_workers=0)
     # Train the model
@@ -70,7 +70,18 @@ def main():
         data_path='/content/drive/MyDrive/AudioDiffusion/data',
         model_path='/content/drive/MyDrive/AudioDiffusion/models',
         output_path='/content/drive/MyDrive/AudioDiffusion/output',
+        label_path={
+            1: 'DogBark',
+            2: 'Sneeze_Cough',
+            3: 'Rain',
+            4: 'MovingMotorVehicle',
+            5: 'Keyboard',
+            6: 'GunShot',
+            7: 'Footstep',
+        },
     )
+    if args.model == 3:
+        path.label = {1: 'DogBark'}
     # data_path = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
 
     # create the model and the diffusion
@@ -101,13 +112,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Diffusion Model')
     parser.add_argument('--train', action='store_true',
                         help='Train the model')
-    parser.add_argument('--model2', action='store_true',
-                        help='Use model2 instead of model1')
+    parser.add_argument('--model', type=int, default=1,
+                        help='choose the model')
     parser.add_argument('--label', type=int, default=1, help='Label to sample')
     parser.add_argument('--loop', type=int, default=1,
                         help='How often the diffusion should happen')
     args = parser.parse_args()
 
-    if args.model2:
+    if args.model == 2:
         from model2 import UNet
+    elif args.model == 3:
+        from model3 import UNet
     main()

@@ -64,7 +64,8 @@ def load_model(empty_model, path, specific_model=None):
 
 
 class Path:
-    def __init__(self, model_path, data_path, output_path) -> None:
+    def __init__(self, model_path, data_path, output_path, label_path) -> None:
         self.model = model_path
         self.output = output_path
         self.data = data_path
+        self.label = label_path
