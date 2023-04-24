@@ -93,7 +93,14 @@ def main():
                           beta_end=0.1, length=88200, steps=steps)
 
     # load a model
+    # model = load_model(path)
+
+    model.epoch += 1
+
+    save_model(model, path)
+
     model = load_model(path)
+    print(model.epoch)
 
     # print the number of trainable parameters
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
