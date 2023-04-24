@@ -54,7 +54,7 @@ def save_samples(diffusion, path, label, count, loop=1):
         data = data[0, :].numpy()
         data = data / np.max(data) * 0.9
         scaled = np.int16(data * 32767)
-        name = f'{output[:-4]}_{time_now}_{i:2}.wav'
+        name = f'output_{time_now}_{i:2}.wav'
         write(join(folderpath, name), 22050, scaled)
 
 
