@@ -83,6 +83,8 @@ class UNet(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv1d(64, 32, kernel_size=9, padding=4),
             nn.ReLU(inplace=True),
+            nn.Conv1d(32, 32, kernel_size=9, padding=4),
+            nn.ReLU(inplace=True),
             nn.Conv1d(32, 1, kernel_size=9, padding=4),
         )
 
