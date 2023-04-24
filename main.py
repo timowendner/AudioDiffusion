@@ -93,14 +93,8 @@ def main():
                           beta_end=0.1, length=88200, steps=steps)
 
     # load a model
-    # model = load_model(path)
-
-    model.epoch += 1
-
-    save_model(model, path)
-
-    model = load_model(path)
-    print(model.epoch)
+    if args.load:
+        model = load_model(path)
 
     # print the number of trainable parameters
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -119,6 +113,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Diffusion Model')
     parser.add_argument('--train', action='store_true',
                         help='Train the model')
+    parser.add_argument('--load', action='store_true',
+                        help='load a model')
     parser.add_argument('--model', type=int, default=1,
                         help='choose the model')
     parser.add_argument('--label', type=int, default=1, help='Label to sample')
