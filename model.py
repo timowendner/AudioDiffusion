@@ -46,9 +46,7 @@ def up(in_channel, out_channel, pad=0):
 
 def embedding(in_channel, out_channel):
     return nn.Sequential(
-        nn.Linear(1, in_channel),
-        nn.ReLU(inplace=True),
-        nn.Linear(in_channel, out_channel),
+        nn.Linear(in_channel+1, out_channel),
         nn.ReLU(inplace=True),
     )
 
