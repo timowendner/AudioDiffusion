@@ -1,33 +1,34 @@
 import torch
 import torch.functional as F
 from torch import sqrt, nn
+import numpy as np
 
 
 class Diffusion(nn.Module):
-    def __init__(self, model, steps=1000, beta_start=1e-4, beta_end=0.02, length=88200) -> None:
+    def __init__(self, model, steps=1000, length=88200) -> None:
         super(Diffusion, self).__init__()
         self.model = model
 
         self.steps = steps
-        self.beta_start = beta_start
-        self.beta_end = beta_end
         self.length = length
 
+        start = 0
+        end = 0.15
+        a = 1.4
+
         t = torch.linspace(0, 1, steps, device=model.device)
-        self.beta = beta_start + (beta_end - beta_start) * t**2
+        self.beta = start + (end - start) * 1 / \
+            (1 + np.e ** -(a/(end - start)*(t - start-0.5)))
         self.alpha = 1 - self.beta
         self.alpha_hat = torch.cumprod(self.alpha, dim=0)
 
     def forward(self, x, t):
-        # if the timestamp is 0 then return a noise-free version
-        if t == 0:
-            return x, torch.zeros_like(x)
-
         # create the noise and compute the noise audio-file
         noise = torch.randn_like(x)
         x_t = sqrt(self.alpha_hat[t]) * x + sqrt(1 - self.alpha_hat[t]) * noise
 
-        return x_t, noise
+        r = np.random.normal(1, 0.035)
+        return x_t * r, noise * r
 
     @torch.no_grad()
     def sample(self, labels: list, loop=1):

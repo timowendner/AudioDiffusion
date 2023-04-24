@@ -36,7 +36,7 @@ class AudioDataset(Dataset):
         waveform = waveform.to(self.device)
 
         # Apply gain
-        waveform = waveform * np.random.uniform(0.75, 1)
+        waveform = waveform * (1 - np.random.normal(0, 0.15)**2)
 
         # create a different starting point and roll the data over
         waveform = torch.roll(waveform, np.random.randint(waveform.shape[0]))
