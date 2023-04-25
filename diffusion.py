@@ -5,9 +5,8 @@ import numpy as np
 
 
 class Diffusion(nn.Module):
-    def __init__(self, model, config) -> None:
+    def __init__(self, config) -> None:
         super(Diffusion, self).__init__()
-        self.model = model
 
         self.steps = config.step_count
         self.length = config.audio_length
@@ -16,10 +15,11 @@ class Diffusion(nn.Module):
         end = config.beta_end
         a = config.beta_sigmoid
 
-        t = torch.linspace(0, 1, self.steps, device=model.device)
+        t = torch.linspace(0, 1, self.steps, device=config.device)
         self.beta = start + (end - start) * 1 / \
             (1 + np.e ** -(a/(end - start)*(t - start-0.5)))
-        self.beta = torch.linspace(start, end, self.steps, device=model.device)
+        self.beta = torch.linspace(
+            start, end, self.steps, device=config.device)
         self.alpha = 1 - self.beta
         self.alpha_hat = torch.cumprod(self.alpha, dim=0)
 
@@ -32,15 +32,14 @@ class Diffusion(nn.Module):
         return x_t, noise
 
     @torch.no_grad()
-    def sample(self, config):
+    def sample(self, model, config):
         n = config.create_count
         labels = [config.create_label + 1] * n
-        model = self.model
         model.eval()
 
         # create a noise array that we want to denoise
-        x = torch.randn(n, 1, self.length, device=model.device)
-        l = torch.tensor(labels, device=model.device).view(-1, 1)
+        x = torch.randn(n, 1, self.length, device=config.device)
+        l = torch.tensor(labels, device=config.device).view(-1, 1)
 
         print('Start creating Samples')
 
@@ -48,7 +47,7 @@ class Diffusion(nn.Module):
         for i in range(1, self.steps):
             for _ in range(config.create_loop):
                 # define the needed variables
-                t = torch.ones(n, device=model.device).long() * \
+                t = torch.ones(n, device=config.device).long() * \
                     (self.steps - i)
                 alpha = self.alpha[t].view(-1, 1, 1)
                 alpha_hat = self.alpha_hat[t].view(-1, 1, 1)
@@ -56,7 +55,7 @@ class Diffusion(nn.Module):
 
                 # predict the noise with the model
                 timestamp = torch.ones(
-                    n, device=model.device) * (self.steps - i)
+                    n, device=config.device) * (self.steps - i)
                 timestamp = timestamp.view(-1, 1)
                 predicted_noise = model(x, timestamp, l)
 

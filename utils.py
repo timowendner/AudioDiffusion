@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from os.path import join, isfile, getmtime, exists
 
 
-def save_model(model, config):
+def save_model(model, optimizer, config):
     if not exists(config.model_path):
         os.makedirs(config.model_path)
 
@@ -19,16 +19,20 @@ def save_model(model, config):
 
     # save the model
     filepath = join(config.model_path, f"{model.name}_{time_now}.p")
-    with open(filepath, 'wb') as f:
-        pkl.dump(model, f)
+
+    torch.save({
+        'model': model.state_dict(),
+        'optimizer': optimizer.state_dict(),
+        'epoch': config.current_epoch,
+    }, filepath)
 
 
-def save_samples(diffusion, config):
+def save_samples(model, diffusion, config):
     if not exists(config.output_path):
         os.makedirs(config.output_path)
 
     # create a new datapoint
-    output = diffusion.sample(config)
+    output = diffusion.sample(model, config)
     output = output.to('cpu')
 
     # get the time now
@@ -60,7 +64,7 @@ def save_samples(diffusion, config):
         write(join(folderpath, name), 22050, scaled)
 
 
-def load_model(config):
+def load_model(model, optimizer, config):
     if not exists(config.model_path):
         os.makedirs(config.model_path)
         return None
@@ -71,12 +75,18 @@ def load_model(config):
 
     if len(files) == 0:
         return None
+    filepath = files[-1]
 
-    print(f'Load model: {files[-1]}')
+    print(f'Load model: {filepath}')
 
-    with open(files[-1], 'rb') as f:
+    # loaded = torch.load(filepath)
+    # model.load_state_dict(loaded['model'])
+    # optimizer.load_state_dict(loaded['optimizer'])
+    # config.current_epoch = loaded['epoch']
+
+    with open(filepath, 'rb') as f:
         model = pkl.load(f)
-    return model
+    return model, optimizer
 
 
 @dataclass

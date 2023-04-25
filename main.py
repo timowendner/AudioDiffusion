@@ -15,7 +15,7 @@ from diffusion import Diffusion
 from utils import save_model, load_model, save_samples, Config
 
 
-def train_network(model, diffusion, config):
+def train_network(model, optimizer, diffusion, config):
     # create the dataset
     dataset = AudioDataset(diffusion, config, model.device)
     train_loader = DataLoader(dataset, batch_size=16,
@@ -24,7 +24,6 @@ def train_network(model, diffusion, config):
     model.train()
     total_step = len(train_loader)
     mse = torch.nn.MSELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
 
     start_time = time.time()
     for epoch in range(config.num_epochs):
@@ -50,11 +49,11 @@ def train_network(model, diffusion, config):
                       f'Loss: {loss.item():.4f}')
 
         # add the number of epochs
-        model.epoch += 1
+        config.current_epoch += 1
 
         # save the model if enough time has passed
         if abs(time.time() - start_time) >= 5*60 or epoch == config.num_epochs - 1:
-            save_model(model, config)
+            save_model(model, optimizer, config)
             start_time = time.time()
 
 
@@ -87,28 +86,30 @@ def main():
         beta_end=0.02,  # diffusion end
         beta_sigmoid=0.15,  # diffusion sigmoid
     )
+    config.model_name = 'aperture'
+    config.device = device
 
     # create the model and the diffusion
     model = UNet(device, config).to(device)
-    model.name = 'aperture'
-    model.epoch = 0
-    diffusion = Diffusion(model, config)
+    optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
+    diffusion = Diffusion(config)
+    config.current_epoch = 0
 
-    # load a model
+    # load the latest model
     if args.load:
-        model = load_model(config)
+        model, optimizer = load_model(model, optimizer, config)
 
     # print the number of trainable parameters
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(
-        f"Number of trainable parameters: {num_params:,}, with epoch {model.epoch}")
+        f"Number of trainable parameters: {num_params:,}, with epoch {config.current_epoch}")
 
     # train the network
     if args.train:
         train_network(model, diffusion, config)
 
     # create new samples
-    save_samples(diffusion, config)
+    save_samples(model, diffusion, config)
 
 
 if __name__ == '__main__':
