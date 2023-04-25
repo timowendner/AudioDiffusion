@@ -78,11 +78,11 @@ class UNet(nn.Module):
         self.step_embedding = embedding(config.step_count, 344)
         self.label_embedding = embedding(config.label_count, 344)
 
-        self.up8 = up(c8 + 2, c8, pad=2)  # 344
+        self.up8 = up(c8 + 2, c8, pad=1)  # 344
         self.up7 = up(c8*2, c7)  # 689
         self.up6 = up(c7*2, c6)  # 1378
         self.up5 = up(c6*2, c5)  # 2756
-        self.up4 = up(c5*2, c4, pad=2)  # 5512
+        self.up4 = up(c5*2, c4, pad=1)  # 5512
         self.up3 = up(c4*2, c3)  # 11050
         self.up2 = up(c3*2, c2)  # 22100
         self.up1 = up(c2*2, c1)  # 44200
