@@ -78,11 +78,11 @@ class UNet(nn.Module):
         self.step_embedding = embedding(config.step_count, 344)
         self.label_embedding = embedding(config.label_count, 344)
 
-        self.up8 = up(c8 + 2, c8)  # 345
-        self.up7 = up(c8*2, c7, pad=2)  # 690
-        self.up6 = up(c7*2, c6)  # 1381
-        self.up5 = up(c6*2, c5, pad=2)  # 2762
-        self.up4 = up(c5*2, c4)  # 5525
+        self.up8 = up(c8 + 2, c8, pad=2)  # 344
+        self.up7 = up(c8*2, c7)  # 689
+        self.up6 = up(c7*2, c6)  # 1378
+        self.up5 = up(c6*2, c5)  # 2756
+        self.up4 = up(c5*2, c4, pad=2)  # 5512
         self.up3 = up(c4*2, c3)  # 11050
         self.up2 = up(c3*2, c2)  # 22100
         self.up1 = up(c2*2, c1)  # 44200
@@ -102,23 +102,25 @@ class UNet(nn.Module):
 
         # create the sinusoidal
         t1 = self.sinusoidal(timestamp, 88200)
-        t2 = self.sinusoidal(timestamp, 22050)
-        t3 = self.sinusoidal(timestamp, 11050)
-        t4 = self.sinusoidal(timestamp, 5512)
-        t5 = self.sinusoidal(timestamp, 2756)
-        t6 = self.sinusoidal(timestamp, 1378)
-        t7 = self.sinusoidal(timestamp, 689)
-        t8 = self.sinusoidal(timestamp, 344)
+        t2 = self.sinusoidal(timestamp, 44100)
+        t3 = self.sinusoidal(timestamp, 22050)
+        t4 = self.sinusoidal(timestamp, 11050)
+        t5 = self.sinusoidal(timestamp, 5512)
+        t6 = self.sinusoidal(timestamp, 2756)
+        t7 = self.sinusoidal(timestamp, 1378)
+        t8 = self.sinusoidal(timestamp, 689)
+        t9 = self.sinusoidal(timestamp, 344)
 
         l = label * 100
         l1 = self.sinusoidal(l, 88200)
-        l2 = self.sinusoidal(l, 22050)
-        l3 = self.sinusoidal(l, 11050)
-        l4 = self.sinusoidal(l, 5512)
-        l5 = self.sinusoidal(l, 2756)
-        l6 = self.sinusoidal(l, 1378)
-        l7 = self.sinusoidal(l, 689)
-        l8 = self.sinusoidal(l, 344)
+        l2 = self.sinusoidal(l, 44100)
+        l3 = self.sinusoidal(l, 22050)
+        l4 = self.sinusoidal(l, 11050)
+        l5 = self.sinusoidal(l, 5512)
+        l6 = self.sinusoidal(l, 2756)
+        l7 = self.sinusoidal(l, 1378)
+        l8 = self.sinusoidal(l, 689)
+        l9 = self.sinusoidal(l, 344)
 
         # create the embeddings
         timestamp = F.one_hot(timestamp.long(), self.step_count + 1)
@@ -135,13 +137,12 @@ class UNet(nn.Module):
         x2 = self.down2(torch.cat([t2, l2, self.pool(x1)], 1))  # length 44100
         x3 = self.down3(torch.cat([t3, l3, self.pool(x2)], 1))  # length 22050
         x4 = self.down4(torch.cat([t4, l4, self.pool(x3)], 1))  # length 11025
-        # length 5512 (.5)
-        x5 = self.down5(torch.cat([t5, l5, self.pool(x4)], 1))
+        x5 = self.down5(torch.cat([t5, l5, self.pool(x4)], 1))  # length 5512
         x6 = self.down6(torch.cat([t6, l6, self.pool(x5)], 1))  # length 2756
         x7 = self.down7(torch.cat([t7, l7, self.pool(x6)], 1))  # length 1378
         x8 = self.down8(torch.cat([t8, l8, self.pool(x7)], 1))  # length 689
 
-        out = torch.cat([t8, l8, step_emb, label_emb, self.pool(x8)], 1)
+        out = torch.cat([t9, l9, step_emb, label_emb, self.pool(x8)], 1)
 
         # decode the data
         out = self.up8(out)
