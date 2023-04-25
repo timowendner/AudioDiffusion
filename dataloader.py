@@ -21,7 +21,7 @@ class AudioDataset(Dataset):
             for path in files:
                 waveform, sr = torchaudio.load(path)
                 waveform = waveform * 0.98 / torch.max(waveform)
-                waveforms.append((label, waveform))
+                waveforms.append((label+1, waveform))
 
         self.waveforms = waveforms
         self.device = device

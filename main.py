@@ -57,10 +57,6 @@ def train_network(model, diffusion, config):
             save_model(model, config)
             start_time = time.time()
 
-        # test the model and plot a example image
-        # test_network(model, loaders["test"], device)
-        # plot(1, loaders["train"], model, device)
-
 
 def main():
     # load the files
@@ -70,15 +66,15 @@ def main():
         model_path='/content/drive/MyDrive/AudioDiffusion/models',
         output_path='/content/drive/MyDrive/AudioDiffusion/output',
         label_path={
-            1: 'DogBark',
-            2: 'Footstep',
-            3: 'GunShot',
-            4: 'Keyboard',
-            5: 'MovingMotorVehicle',
-            6: 'Rain',
-            7: 'Sneeze_Cough',
+            0: 'DogBark',
+            1: 'Footstep',
+            2: 'GunShot',
+            3: 'Keyboard',
+            4: 'MovingMotorVehicle',
+            5: 'Rain',
+            6: 'Sneeze_Cough',
         },
-        label_train={1, },
+        label_train={0, },
         label_count=7,
         step_count=100,
         lr=0.001,
@@ -91,7 +87,6 @@ def main():
         beta_end=0.02,
         beta_sigmoid=0.15,
     )
-    # data_config = '/Users/timowendner/Programming/AudioDiffusion/Data/DogBark'
 
     # create the model and the diffusion
     model = UNet(device, config).to(device)
