@@ -14,6 +14,7 @@ class Sinusoidal(nn.Module):
         n = position.shape[0]
         values = torch.arange(length, device=self.device)
         output = torch.zeros((n, length), device=self.device)
+        print(output.shape, position.shape)
         output[:, ::2] = sin(position.view(-1, 1) /
                              pow(1000, values[::2] / length))
         output[:, 1::2] = cos(position.view(-1, 1) /
