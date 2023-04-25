@@ -106,7 +106,7 @@ def main():
 
     # train the network
     if args.train:
-        train_network(model, diffusion, config)
+        train_network(model, optimizer, diffusion, config)
 
     # create new samples
     save_samples(model, diffusion, config)

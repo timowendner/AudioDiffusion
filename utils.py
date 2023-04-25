@@ -79,13 +79,13 @@ def load_model(model, optimizer, config):
 
     print(f'Load model: {filepath}')
 
-    # loaded = torch.load(filepath)
-    # model.load_state_dict(loaded['model'])
-    # optimizer.load_state_dict(loaded['optimizer'])
-    # config.current_epoch = loaded['epoch']
+    loaded = torch.load(filepath)
+    model.load_state_dict(loaded['model'])
+    optimizer.load_state_dict(loaded['optimizer'])
+    config.current_epoch = loaded['epoch']
 
-    with open(filepath, 'rb') as f:
-        model = pkl.load(f)
+    # with open(filepath, 'rb') as f:
+    #     model = pkl.load(f)
     return model, optimizer
 
 
