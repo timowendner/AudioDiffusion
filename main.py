@@ -55,6 +55,7 @@ def train_network(model, optimizer, diffusion, config):
         if abs(time.time() - start_time) >= 5*60 or epoch == config.num_epochs - 1:
             save_model(model, optimizer, config)
             start_time = time.time()
+    return model, optimizer
 
 
 def main():
@@ -106,7 +107,7 @@ def main():
 
     # train the network
     if args.train:
-        train_network(model, optimizer, diffusion, config)
+        model, optimizer = train_network(model, optimizer, diffusion, config)
 
     # create new samples
     save_samples(model, diffusion, config)

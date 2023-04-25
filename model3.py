@@ -61,7 +61,7 @@ class UNet(nn.Module):
         self.step_count = config.step_count
         self.label_count = config.label_count
 
-        c1, c2, c3, c4 = 24, 32, 48, 64
+        c1, c2, c3, c4 = 24, 32, 64, 96
 
         self.down1 = dual(1, c1)
         self.down2 = dual(c1, c2)
