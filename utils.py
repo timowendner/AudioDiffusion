@@ -72,6 +72,8 @@ def load_model(config):
     if len(files) == 0:
         return None
 
+    print(f'Load model: {files[-1]}')
+
     with open(files[-1], 'rb') as f:
         model = pkl.load(f)
     return model
