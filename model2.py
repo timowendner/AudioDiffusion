@@ -14,7 +14,6 @@ class Sinusoidal(nn.Module):
         n = position.shape[0]
         values = torch.arange(length, device=self.device)
         output = torch.zeros((n, length), device=self.device)
-        print(output.shape, position.shape)
         output[:, ::2] = sin(position.view(-1, 1) /
                              pow(1000, values[::2] / length))
         output[:, 1::2] = cos(position.view(-1, 1) /
@@ -101,16 +100,6 @@ class UNet(nn.Module):
         label = label.to(self.device)
         n = x.shape[0]
 
-        # create the embeddings
-        timestamp = F.one_hot(timestamp.long(), self.step_count + 1)
-        timestamp = timestamp.view(n, 1, -1).type(torch.float32)
-        label = F.one_hot(label.long(), self.label_count + 1)
-        label = label.view(n, 1, -1).type(torch.float32)
-        step_emb = self.step_embedding(timestamp)
-        label_emb = self.label_embedding(label)
-
-        lengths = (88200, 22050, 11050, 5512, 2756, 1378, 689, 344)
-
         # create the sinusoidal
         t1 = self.sinusoidal(timestamp, 88200)
         t2 = self.sinusoidal(timestamp, 22050)
@@ -130,6 +119,16 @@ class UNet(nn.Module):
         l6 = self.sinusoidal(l, 1378)
         l7 = self.sinusoidal(l, 689)
         l8 = self.sinusoidal(l, 344)
+
+        # create the embeddings
+        timestamp = F.one_hot(timestamp.long(), self.step_count + 1)
+        timestamp = timestamp.view(n, 1, -1).type(torch.float32)
+        label = F.one_hot(label.long(), self.label_count + 1)
+        label = label.view(n, 1, -1).type(torch.float32)
+        step_emb = self.step_embedding(timestamp)
+        label_emb = self.label_embedding(label)
+
+        lengths = (88200, 22050, 11050, 5512, 2756, 1378, 689, 344)
 
         # encode the data into a lower dimensional space
         x1 = self.down1(torch.cat([t1, l1, x], 1))  # length 88200
