@@ -18,7 +18,7 @@ def save_model(model, optimizer, config):
     time_now = time_now.strftime("%d%b_%H%M")
 
     # save the model
-    filepath = join(config.model_path, f"{model.name}_{time_now}.p")
+    filepath = join(config.model_path, f"{config.model_name}_{time_now}.p")
 
     torch.save({
         'model': model.state_dict(),
