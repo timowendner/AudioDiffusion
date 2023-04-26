@@ -45,8 +45,10 @@ class AudioDataset(Dataset):
         max_timestamp = self.diffusion.steps
         timestamp = np.random.randint(1, max_timestamp)
         x_t, noise = self.diffusion(waveform, timestamp)
+        mel = T.MelSpectrogram(sample_rate=22050)(x_t)
 
         x_t = x_t.to(self.device)
         noise = noise.to(self.device)
+        mel = mel.to(self.device)
 
-        return x_t, noise, timestamp, label
+        return x_t, mel, noise, timestamp, label

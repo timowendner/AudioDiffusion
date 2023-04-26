@@ -84,10 +84,11 @@ class UNet(nn.Module):
             nn.Conv1d(64, 1, kernel_size=9, padding=4),
         )
 
-    def forward(self, x: Tensor, timestamp: Tensor, label: Tensor) -> Tensor:
+    def forward(self, x: Tensor, mel: Tensor, timestamp: Tensor, label: Tensor) -> Tensor:
         timestamp = timestamp.to(self.device)
         label = label.to(self.device)
         n = x.shape[0]
+        print(mel.shape)
 
         t1 = self.sinusoidal(timestamp, 88200)
         t2 = self.sinusoidal(timestamp, 22050)
