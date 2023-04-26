@@ -88,8 +88,6 @@ def main():
     diffusion = Diffusion(config)
     config.current_epoch = 0
 
-    print(config.label_train)
-
     # load the latest model
     if args.load:
         model, optimizer = load_model(model, optimizer, config)

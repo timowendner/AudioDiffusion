@@ -14,6 +14,7 @@ class AudioDataset(Dataset):
     def __init__(self, diffusion: Diffusion, config, device: torch.device):
         waveforms = []
         for label, folder in config.label_path.items():
+            print(label, folder)
             if label not in config.label_train:
                 continue
             dir_path = os.path.join(config.data_path, folder)
@@ -22,6 +23,9 @@ class AudioDataset(Dataset):
                 waveform, sr = torchaudio.load(path)
                 waveform = waveform * 0.98 / torch.max(waveform)
                 waveforms.append((label+1, waveform))
+
+        if len(waveforms) == 0:
+            raise AttributeError('Data-path seems to be empty')
 
         self.waveforms = waveforms
         self.device = device
