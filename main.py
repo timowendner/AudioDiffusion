@@ -3,16 +3,16 @@ import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
 import pickle as pkl
+import json
 
 import argparse
 import datetime
 import time
 import os
 
-from model import UNet
 from dataloader import AudioDataset
 from diffusion import Diffusion
-from utils import save_model, load_model, save_samples, Config
+from utils import save_model, load_model, save_samples
 
 
 def train_network(model, optimizer, diffusion, config):
@@ -59,36 +59,28 @@ def train_network(model, optimizer, diffusion, config):
 
 
 def main():
-    # load the files
+    # Load JSON config file
+    with open(args.config_path) as f:
+        config_json = json.load(f)
+
+    # create the config file
+    class Config:
+        pass
+    config = Config()
+    for key, data in config_json.items():
+        setattr(config, key, data)
+
+    # set the device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    config = Config(
-        data_path='/content/drive/MyDrive/AudioDiffusion/data',
-        model_path='/content/drive/MyDrive/AudioDiffusion/models',
-        output_path='/content/drive/MyDrive/AudioDiffusion/output',
-        label_path={
-            0: 'DogBark',
-            1: 'Footstep',
-            2: 'GunShot',
-            3: 'Keyboard',
-            4: 'MovingMotorVehicle',
-            5: 'Rain',
-            6: 'Sneeze_Cough',
-        },  # all label folders
-        label_train={0, },  # what labels to train for
-        label_count=7,  # how many samples are there
-        step_count=250,  # how many diffusion steps do we have
-        lr=0.0001,  # learning rate
-        create_loop=args.loop,  # repeat every timestamp while creating samples
-        create_label=args.label,  # what sample to create
-        create_count=args.count,  # how many samples to create
-        num_epochs=1000,  # epochs to train
-        audio_length=88200,  # audio length
-        beta_start=0.0001,  # diffusion start
-        beta_end=0.04,  # diffusion end
-        beta_sigmoid=0.15,  # diffusion sigmoid
-    )
-    config.model_name = 'port'
     config.device = device
+
+    # load the right model
+    if config.model_number == 1:
+        from model import UNet
+    elif config.model_number == 2:
+        from model2 import UNet
+    elif config.model_number == 3:
+        from model3 import UNet
 
     # create the model and the diffusion
     model = UNet(device, config).to(device)
@@ -117,19 +109,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Diffusion Model')
     parser.add_argument('--train', action='store_true',
                         help='Train the model')
+    parser.add_argument('--config_path', type=str,
+                        help='Path to the configuration file')
     parser.add_argument('--load', action='store_true',
                         help='load a model')
-    parser.add_argument('--model', type=int, default=1,
-                        help='choose the model')
-    parser.add_argument('--label', type=int, default=1, help='Label to sample')
-    parser.add_argument('--count', type=int, default=1,
-                        help='How many samples to create')
-    parser.add_argument('--loop', type=int, default=1,
-                        help='How often the diffusion should happen')
     args = parser.parse_args()
 
-    if args.model == 2:
-        from model2 import UNet
-    elif args.model == 3:
-        from model3 import UNet
     main()

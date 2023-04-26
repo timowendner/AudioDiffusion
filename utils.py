@@ -4,7 +4,6 @@ import datetime
 import pickle as pkl
 import numpy as np
 from scipy.io.wavfile import write
-from dataclasses import dataclass
 
 from os.path import join, isfile, getmtime, exists
 
@@ -81,29 +80,10 @@ def load_model(model, optimizer, config):
 
     loaded = torch.load(filepath)
     model.load_state_dict(loaded['model'])
-    optimizer.load_state_dict(loaded['optimizer'])
+    if not config.change_lr:
+        optimizer.load_state_dict(loaded['optimizer'])
     config.current_epoch = loaded['epoch']
 
     # with open(filepath, 'rb') as f:
     #     model = pkl.load(f)
     return model, optimizer
-
-
-@dataclass
-class Config:
-    model_path: str
-    data_path: str
-    output_path: str
-    label_path: dict
-    label_train: set
-    step_count: int
-    label_count: int
-    lr: float
-    create_count: int
-    create_label: int
-    create_loop: int
-    num_epochs: int
-    audio_length: int
-    beta_start: int
-    beta_end: int
-    beta_sigmoid: int

@@ -15,10 +15,19 @@ class Diffusion(nn.Module):
         end = config.beta_end
         a = config.beta_sigmoid
 
+        # create the beta schedule
         t = torch.linspace(0, 1, self.steps, device=config.device)
-        self.beta = start + (end - start) * 1 / \
-            (1 + np.e ** -(a/(end - start)*(t - start-0.5)))
-        self.beta = start + (end - start) * t**2
+        if config.beta_schedule == 'linear':
+            self.beta = start + (end - start) * t
+        elif config.beta_schedule == 'quadratic':
+            self.beta = start + (end - start) * t**2
+        elif config.beta_schedule == 'sigmoid':
+            self.beta = start + (end - start) * 1 / \
+                (1 + np.e ** -(a/(end - start)*(t - start-0.5)))
+        else:
+            raise AttributeError(
+                f'Beta Schedule {config.beta_schedule} is unknown')
+
         self.alpha = 1 - self.beta
         self.alpha_hat = torch.cumprod(self.alpha, dim=0)
 
@@ -27,7 +36,6 @@ class Diffusion(nn.Module):
         noise = torch.randn_like(x)
         x_t = sqrt(self.alpha_hat[t]) * x + sqrt(1 - self.alpha_hat[t]) * noise
 
-        # r = np.random.normal(1, 0.035)
         return x_t, noise
 
     @torch.no_grad()
