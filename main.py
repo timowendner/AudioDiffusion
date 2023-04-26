@@ -33,9 +33,9 @@ def train_network(model, optimizer, diffusion, config):
         print(f"Start Epoch: {epoch + 1}/{config.num_epochs}   {time_now}")
 
         # loop through the training loader
-        for i, (model_input, mel, targets, t, labels) in enumerate(train_loader):
+        for i, (model_input, targets, t, labels) in enumerate(train_loader):
             # Forward pass
-            outputs = model(model_input, mel, t, labels)
+            outputs = model(model_input, t, labels)
             loss = mse(outputs, targets)
 
             # calculate gradients
@@ -74,7 +74,7 @@ def main():
             5: 'Rain',
             6: 'Sneeze_Cough',
         },  # all label folders
-        label_train={6, },  # what labels to train for
+        label_train={0, 1, 2, 3, 4, 5, 6},  # what labels to train for
         label_count=7,  # how many samples are there
         step_count=100,  # how many diffusion steps do we have
         lr=0.001,  # learning rate
@@ -87,7 +87,7 @@ def main():
         beta_end=0.02,  # diffusion end
         beta_sigmoid=0.15,  # diffusion sigmoid
     )
-    config.model_name = 'aperture'
+    config.model_name = 'port'
     config.device = device
 
     # create the model and the diffusion
