@@ -59,7 +59,7 @@ class UNet(nn.Module):
         self.step_count = config.step_count
         self.label_count = config.label_count
 
-        c1, c2, c3, c4 = 8, 16, 32, 64
+        c1, c2, c3, c4 = 8, 16, 16, 16
 
         self.down1 = dual(1, c1)
         self.down2 = dual(c1, c2)
@@ -77,11 +77,11 @@ class UNet(nn.Module):
         self.up1 = up(c2*2, c1)
 
         self.output = nn.Sequential(
-            nn.Conv1d(c1*2 + 2, 64, kernel_size=9, padding=4),
+            nn.Conv1d(c1*2 + 2, 32, kernel_size=9, padding=4),
             nn.ReLU(inplace=True),
-            nn.Conv1d(64, 64, kernel_size=9, padding=4),
+            nn.Conv1d(32, 32, kernel_size=9, padding=4),
             nn.ReLU(inplace=True),
-            nn.Conv1d(64, 1, kernel_size=9, padding=4),
+            nn.Conv1d(32, 1, kernel_size=9, padding=4),
         )
 
     def forward(self, x: Tensor, timestamp: Tensor, label: Tensor) -> Tensor:

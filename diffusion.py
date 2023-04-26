@@ -18,8 +18,7 @@ class Diffusion(nn.Module):
         t = torch.linspace(0, 1, self.steps, device=config.device)
         self.beta = start + (end - start) * 1 / \
             (1 + np.e ** -(a/(end - start)*(t - start-0.5)))
-        # self.beta = torch.linspace(
-        # start, end, self.steps, device=config.device)
+        self.beta = start + (end - start) * t**2
         self.alpha = 1 - self.beta
         self.alpha_hat = torch.cumprod(self.alpha, dim=0)
 

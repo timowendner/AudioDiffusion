@@ -74,17 +74,17 @@ def main():
             5: 'Rain',
             6: 'Sneeze_Cough',
         },  # all label folders
-        label_train={0, 1, 2, 3, 4, 5, 6},  # what labels to train for
+        label_train={0, },  # what labels to train for
         label_count=7,  # how many samples are there
-        step_count=100,  # how many diffusion steps do we have
+        step_count=250,  # how many diffusion steps do we have
         lr=0.001,  # learning rate
         create_loop=args.loop,  # repeat every timestamp while creating samples
         create_label=args.label,  # what sample to create
         create_count=args.count,  # how many samples to create
         num_epochs=1000,  # epochs to train
         audio_length=88200,  # audio length
-        beta_start=1e-4,  # diffusion start
-        beta_end=0.02,  # diffusion end
+        beta_start=0.0001,  # diffusion start
+        beta_end=0.04,  # diffusion end
         beta_sigmoid=0.15,  # diffusion sigmoid
     )
     config.model_name = 'port'
