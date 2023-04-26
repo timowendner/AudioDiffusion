@@ -13,11 +13,8 @@ from diffusion import Diffusion
 class AudioDataset(Dataset):
     def __init__(self, diffusion: Diffusion, config, device: torch.device):
         waveforms = []
-        label_train = set(config.label_train)
-        print(0 in config.label_train)
         for label, folder in config.label_path.items():
-            if label not in label_train:
-                print(label, config.label_train)
+            if label not in config.label_train:
                 continue
             dir_path = os.path.join(config.data_path, folder)
             files = glob.glob(os.path.join(dir_path, "*.wav"))
