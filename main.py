@@ -77,7 +77,7 @@ def main():
         label_train={0, },  # what labels to train for
         label_count=7,  # how many samples are there
         step_count=250,  # how many diffusion steps do we have
-        lr=0.001,  # learning rate
+        lr=0.0001,  # learning rate
         create_loop=args.loop,  # repeat every timestamp while creating samples
         create_label=args.label,  # what sample to create
         create_count=args.count,  # how many samples to create
