@@ -88,6 +88,8 @@ def main():
     diffusion = Diffusion(config)
     config.current_epoch = 0
 
+    print(config.data_path)
+
     # load the latest model
     if args.load:
         model, optimizer = load_model(model, optimizer, config)
