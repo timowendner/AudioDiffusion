@@ -3,12 +3,33 @@ import torch
 from torch.utils.data import DataLoader, random_split
 from torch import nn
 from torch.optim import Adam
-from model_ph import UNet  # import your own module(s) here
+from model4 import UNet  # import your own module(s) here
 from dataloader import AudioDataset
 from diffusion import Diffusion
 
+from fad_score import FADWrapper
+import os
+import shutil
+from utils import save_samples
+import numpy as np
 
 generator = torch.Generator().manual_seed(42)
+
+def fad(model, config, diffusion):
+    config.output_path = '{}/generated_files'.format(config.model_name)
+    config.create_label = [0,1,2,3,4,5,6]
+    config.create_count = 100
+    config.create_loop = 1
+    if os.path.exists(config.output_path):
+        shutil.rmtree(config.output_path)
+    os.makedirs(config.output_path)
+    save_samples(model, diffusion, config)
+    fad_wrapper = FADWrapper.FADWrapper(generated_audio_samples_dir=config.output_path, ground_truth_audio_samples_dir="fad_score/data/eval")
+    fd = fad_wrapper.compute_fad()
+    print(fd)
+    return np.mean(list(fd['FAD']))
+
+
 
 def objective(trial):
     # Define the hyperparameters to search over
@@ -48,6 +69,31 @@ def objective(trial):
             val_loss = sum(criterion(model(x.to(device), t.to(device), y.to(device)), y.to(device)) for x, t, y in val_loader) / len(val_loader)
 
     return val_loss.item()
+
+
+def _test_fad():
+    import json
+    with open('config.json') as f:
+        config_json = json.load(f)
+    loaded = torch.load('test.p')
+    class Config:
+        pass
+    config = Config()
+    for key, data in config_json.items():
+        setattr(config, key, data)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = 'cpu'
+    config.device = device
+    model = UNet(device, config).to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
+    diffusion = Diffusion(config)
+    model.load_state_dict(loaded['model'])
+    if not config.change_lr:
+        optimizer.load_state_dict(loaded['optimizer'])
+    config.current_epoch = loaded['epoch']
+    r = fad(model, config, diffusion)
+    print(r)
+
 
 
 if __name__ == '__main__':
