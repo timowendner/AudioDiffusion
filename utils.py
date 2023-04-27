@@ -8,7 +8,7 @@ from scipy.io.wavfile import write
 from os.path import join, isfile, getmtime, exists
 
 
-def save_model(model, optimizer, config):
+def save_model(model, optimizer, config, epoch):
     if not exists(config.model_path):
         os.makedirs(config.model_path)
 
@@ -17,7 +17,7 @@ def save_model(model, optimizer, config):
     time_now = time_now.strftime("%d%b_%H%M")
 
     # save the model
-    filepath = join(config.model_path, f"{config.model_name}_{time_now}.p")
+    filepath = join(config.model_path, f"{config.model_name}_{epoch}eps.p")
 
     torch.save({
         'model': model.state_dict(),
@@ -63,7 +63,7 @@ def save_samples(model, diffusion, config):
         write(join(folderpath, name), 22050, scaled)
 
 
-def load_model(model, optimizer, config):
+def load_model(model, optimizer, config): # TODO fix loading
     if not exists(config.model_path):
         os.makedirs(config.model_path)
         return None
@@ -77,7 +77,7 @@ def load_model(model, optimizer, config):
     filepath = files[-1]
 
     print(f'Load model: {filepath}')
-
+    
     loaded = torch.load(filepath)
     model.load_state_dict(loaded['model'])
     if not config.change_lr:

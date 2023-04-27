@@ -18,6 +18,7 @@ from utils import save_model, load_model, save_samples
 def train_network(model, optimizer, diffusion, config):
     # create the dataset
     dataset = AudioDataset(diffusion, config, model.device)
+    print(f'Training on {len(dataset):,} samples')
     train_loader = DataLoader(dataset, batch_size=16,
                               shuffle=True, num_workers=0)
     # Train the model
@@ -52,8 +53,9 @@ def train_network(model, optimizer, diffusion, config):
         config.current_epoch += 1
 
         # save the model if enough time has passed
-        if abs(time.time() - start_time) >= 5*60 or epoch == config.num_epochs - 1:
-            save_model(model, optimizer, config)
+        if not epoch % 50 or epoch == config.num_epochs - 1:
+        # if abs(time.time() - start_time) >= 5*60 or 
+            save_model(model, optimizer, config, epoch)
             start_time = time.time()
     return model, optimizer
 

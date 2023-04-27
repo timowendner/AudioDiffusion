@@ -1,0 +1,11 @@
+__pycache__/
+
+wandb/
+datasets/
+DCASE23/
+
+ph_notes/
+configs/
+data/
+models/
+output/
