@@ -17,12 +17,12 @@ def objective(trial):
         'lr': trial.suggest_float('lr', 1e-5, 1e-2),
         'batch_size': trial.suggest_categorical('batch_size', [16, 32, 64]),
         'step_count': trial.suggest_int('step_count', 1, 10),
-        
+        'label_count': trial.suggest_int('label_count', 1, 10),
     }
 
     # Define your data loading and splitting code here
     dataset = AudioDataset(Diffusion.diffusion, config, model.device)
-    train_data, val_data = random_split(dataset, [0.9,0.1], generator=generator)
+    train_data, val_data = random_split(dataset, [0.7,0.3], generator=generator)
     train_loader = DataLoader(train_data, batch_size=config['batch_size'], shuffle=True)
     val_loader = DataLoader(val_data, batch_size=config['batch_size'])
 
@@ -35,7 +35,7 @@ def objective(trial):
     # Train the model and calculate the validation loss
     criterion = nn.MSELoss()
     
-    for epoch in range(500):
+    for epoch in range(100):
         model.train()
         for x, t, y in train_loader:
             optimizer.zero_grad()
