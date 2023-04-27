@@ -1,0 +1,6 @@
+__pycache__/
+configs/
+data/
+models/
+output/
+ph_notes/
