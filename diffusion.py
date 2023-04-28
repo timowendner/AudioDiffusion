@@ -2,6 +2,7 @@ import torch
 import torch.functional as F
 from torch import sqrt, nn
 import numpy as np
+from itertools import chain
 
 
 class Diffusion(nn.Module):
@@ -51,7 +52,7 @@ class Diffusion(nn.Module):
         print('Start creating Samples')
 
         # loop through all timesteps
-        for i in range(1, self.steps):
+        for i in chain(range(1, self.steps), [1]*config.create_last):
             for _ in range(config.create_loop):
                 # define the needed variables
                 t = torch.ones(n, device=config.device).long() * \
