@@ -27,11 +27,11 @@ config = {
 class AudioDataset(Dataset):
     def __init__(self, diffusion: Diffusion, device):
         waveforms = []
-        for label, folder in config.label_path.items():
+        for label, folder in config["label_path"].items():
             label = int(label)
-            if label not in config.label_train:
+            if label not in config["label_train"]:
                 continue
-            dir_path = os.path.join(config.data_path, folder)
+            dir_path = os.path.join(config["data_path"], folder)
             files = glob.glob(os.path.join(dir_path, "*.wav"))
             for path in files:
                 waveform, sr = torchaudio.load(path)

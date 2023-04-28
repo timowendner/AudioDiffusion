@@ -16,11 +16,16 @@ from fad_score import FADWrapper
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-def fad(model, hp_config, diffusion):
+
+def update_config_savesamples(config):
     config.output_path = '{}/generated_files'.format(config.model_name)
     config.create_label = [0,1,2,3,4,5,6]
     config.create_count = 100
-    hp_config['create_loop'] = 1
+
+
+
+def fad(model, hp_config, diffusion):
+    config = update_config_savesamples(hp_config)
     if os.path.exists(config.output_path):
         shutil.rmtree(config.output_path)
     os.makedirs(config.output_path)
@@ -38,7 +43,7 @@ def objective(trial):
         'optimizer': trial.suggest_categorical("optimizer", ["Adam", "RMSprop", "SGD"]),
         'lr': trial.suggest_float('lr', 1e-5, 1e-3),
         # diffusion
-        'step_count': trial.suggest_int('step_count', 250, 500, 1000),
+        'step_count': trial.suggest_int('step_count', 250, 500, 50),
         'beta_start': trial.suggest_float('beta_start', 1e-5, 1e-3),
         'beta_end': trial.suggest_float('beta_end', 0.01, 0.04),
         'beta_schedule': trial.suggest_categorical('beta_schedule', ['quadratic', 'linear', 'sigmoid']),
@@ -48,7 +53,7 @@ def objective(trial):
     }
     
     # data loading and diffusion
-    diffusion = Diffusion.diffusion(hp_config, device)
+    diffusion = Diffusion(hp_config, device)
     dataset = AudioDataset(diffusion, device)
     train_loader = DataLoader(dataset, batch_size=hp_config['batch_size'],
                               shuffle=True, num_workers=2)
@@ -56,7 +61,15 @@ def objective(trial):
     # model and optimizer
     model = UNet(device, hp_config)
     model.to(device)
-    optimizer = hp_config['optimizer'](model.parameters(), lr=hp_config['lr'])
+    optimizer = None
+
+    if(hp_config['optimizer'] == "Adam"):
+        optimizer = torch.optim.Adam(model.parameters(), lr=hp_config['lr'])
+    elif(hp_config['optimizer'] == "RMSprop"):
+        optimizer = torch.optim.RMSprop(model.parameters(), lr=hp_config['lr'])
+    elif(hp_config['optimizer'] == "SGD"):
+        optimizer = torch.optim.SGD(model.parameters(), lr=hp_config['lr'])
+
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f'num_parameters: {num_params:,}')
     
@@ -65,14 +78,13 @@ def objective(trial):
     num_epochs = 1 # 250
     num_batches = len(train_loader)
     criterion = torch.nn.MSELoss()
-    
-    for epoch in tqdm(range(num_epochs)):
+    for epoch in tqdm.tqdm(range(num_epochs)):
         #  # print the epoch and current time
         # time_now = datetime.datetime.now().strftime("%H:%M")
         # print(f"Start Epoch: {epoch + 1}/{num_epochs}   {time_now}")
         
         # loop through the training loader
-        for i, (samples, targets, timesteps, labels) in enumerate(num_batches):
+        for i, (samples, targets, timesteps, labels) in enumerate(train_loader):
             # forward
             outputs = model(samples, timesteps, labels)
             loss = criterion(outputs, targets)

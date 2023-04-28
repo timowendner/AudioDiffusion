@@ -4,6 +4,9 @@ import numpy as np
 import torch.nn.functional as F
 from torch import sin, cos, pow, Tensor
 
+def update_config(config):
+    config['label_count'] = 7
+    return config
 
 class Sinusoidal(nn.Module):
     def __init__(self, device):
@@ -60,6 +63,7 @@ def embedding(in_channel, out_channel):
 class UNet(nn.Module):
     def __init__(self, device, config):
         super(UNet, self).__init__()
+        config = update_config(config)
         self.device = device
         self.sinusoidal = Sinusoidal(device)
         self.step_count = config['step_count']
