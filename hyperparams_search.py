@@ -15,12 +15,16 @@ from hp_utils import save_model, save_samples
 from fad_score import FADWrapper
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+counter = 0
 
 def update_config_savesamples(config):
+    global counter
     config.output_path = '{}/generated_files'.format(config.model_name)
+    config.save_samples = '{}/{}'.format(config.model_name, counter)
     config.create_label = [0,1,2,3,4,5,6]
     config.create_count = 100
+    config.samples_to_keep = 5
+    counter += 1
 
 
 
@@ -33,6 +37,11 @@ def fad(model, hp_config, diffusion):
     fad_wrapper = FADWrapper.FADWrapper(generated_audio_samples_dir=config.output_path, ground_truth_audio_samples_dir="fad_score/data/eval")
     fd = fad_wrapper.compute_fad()
     print(fd)
+    
+    config.output_path = config.save_samples
+    config.create_count = config.samples_to_keep
+    save_samples(model, diffusion, config)
+
     return np.mean(list(fd['FAD']))
 
 def objective(trial):
