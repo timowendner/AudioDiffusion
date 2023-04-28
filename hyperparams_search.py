@@ -12,12 +12,14 @@ from hp_dataloader import AudioDataset
 from hp_diffusion import Diffusion
 from hp_model import UNet 
 from hp_utils import save_model, save_samples
-from fad_score import FADWrapper
+# from fad_score import FADWrapper
+from eval import FADWrapper
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 counter = 0
 
 def update_config_savesamples(config):
+    
     global counter
     config.output_path = '{}/generated_files'.format(config.model_name)
     config.save_samples = '{}/{}'.format(config.model_name, counter)
@@ -25,8 +27,6 @@ def update_config_savesamples(config):
     config.create_count = 100
     config.samples_to_keep = 5
     counter += 1
-
-
 
 def fad(model, hp_config, diffusion):
     config = update_config_savesamples(hp_config)
@@ -117,7 +117,6 @@ if __name__ == '__main__':
     
     study = optuna.create_study(direction='minimize')
     study.optimize(objective, n_trials=1) # TODO change
-
     trial = study.best_trial
     print('FAD: {}'.format(trial.value))
     print("Best hyperparameters: {}".format(trial.params))
