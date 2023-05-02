@@ -1,11 +1,12 @@
 __pycache__/
 
-wandb/
-datasets/
-DCASE23/
-
+_doc*
 ph_notes/
+
 configs/
+eval/
+fad_score/
 data/
+
 models/
 output/

@@ -86,6 +86,8 @@ def main():
         from model3 import UNet
     elif config.model_number == 4:
         from model4 import UNet
+    elif config.model_number == 5:
+        from model_t import UNet
 
     # create the model and the diffusion
     model = UNet(device, config).to(device)
@@ -105,7 +107,14 @@ def main():
     # train the network
     if args.train:
         model, optimizer = train_network(model, optimizer, diffusion, config)
-
+    if args.train_continue:
+        model = UNet(device, config).to(device)
+        loaded = torch.load(config.pretrained_model)
+        model.load_state_dict(loaded['model'])
+        
+        # model.load_state_dict(torch.load(config.pretrained_model))
+        model, optimizer = train_network(model, optimizer, diffusion, config)
+    
     # create new samples
     save_samples(model, diffusion, config)
 
@@ -114,6 +123,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Diffusion Model')
     parser.add_argument('--train', action='store_true',
                         help='Train the model')
+    parser.add_argument('--train_continue', action='store_true',
+                        help='Continue training a model')
     parser.add_argument('--config_path', type=str,
                         help='Path to the configuration file')
     parser.add_argument('--load', action='store_true',
