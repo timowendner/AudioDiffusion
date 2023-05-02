@@ -26,7 +26,7 @@ def save_model(model, optimizer, config):
     }, filepath)
 
 
-def save_samples(model, diffusion, config):
+def save_samples(model, diffusion, config, it=0):
     if not exists(config.output_path):
         os.makedirs(config.output_path)
 
@@ -52,10 +52,11 @@ def save_samples(model, diffusion, config):
     folderpath = join(config.output_path, foldernames[config.create_label])
     if not exists(folderpath):
         os.makedirs(folderpath)
-    for f in os.listdir(folderpath):
-        os.remove(join(folderpath, f))
+    #for f in os.listdir(folderpath):
+     #   os.remove(join(folderpath, f))
 
     for i, data in enumerate(output):
+        i = i + 10*it
         data = data[0, :].numpy()
         data = data / np.max(data) * 0.9
         scaled = np.int16(data * 32767)
