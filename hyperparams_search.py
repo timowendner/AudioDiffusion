@@ -28,12 +28,16 @@ def update_config_savesamples(config):
     config.samples_to_keep = 5
     counter += 1
 
-def fad(model, hp_config, diffusion):
+def fad(model, hp_config, diffusion, labels = [0,1,2,3,4,5,6]):
     config = update_config_savesamples(hp_config)
     if os.path.exists(config.output_path):
         shutil.rmtree(config.output_path)
     os.makedirs(config.output_path)
-    save_samples(model, diffusion, config)
+    for label in labels:
+        config.create_label = label
+        for i in range(10):
+            torch.cuda.empty_cache()
+            save_samples(model, diffusion, config, it=i)
     fad_wrapper = FADWrapper.FADWrapper(generated_audio_samples_dir=config.output_path, ground_truth_audio_samples_dir="fad_score/data/eval")
     fd = fad_wrapper.compute_fad()
     print(fd)
