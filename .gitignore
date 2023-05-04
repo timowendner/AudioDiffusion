@@ -12,7 +12,18 @@ ph_notes/
 
 result*
 results*
+__pycache__/
+
+_doc*
+ph_notes/
+
+configs/
+eval/
+fad_score/
+data/
 
 class4*
 fad_score_tmp/
 fad_score_data/
+models/
+output/
