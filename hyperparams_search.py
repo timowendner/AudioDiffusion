@@ -1,6 +1,7 @@
 import os
 import shutil
 import tqdm
+import datetime
 
 import torch
 from torch.utils.data import DataLoader
@@ -11,10 +12,11 @@ import optuna
 from hp_dataloader import AudioDataset
 from hp_diffusion import Diffusion
 from hp_model import UNet 
-from hp_utils import save_model, save_samples
+from utils import save_model, save_samples
 from fad_score import FADWrapper
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 counter = 0
 
 gt_embedding_path = os.path.join(os.getcwd(), 'fad_score', 'data', 'eval')
@@ -22,31 +24,35 @@ gt_embedding_path = os.path.join(os.getcwd(), 'fad_score', 'data', 'eval')
 
 def update_config_savesamples(config):
     global counter
-    config.output_path = '{}/generated_files'.format(config.model_name)
-    config.save_samples = '{}/{}'.format(config.model_name, counter)
+    config['output_path'] = 'hp_generated_files'
+    config['save_samples'] = 'hp_samples/{}'.format(counter)
     # config.create_label = [0,1,2,3,4,5,6]
-    config.create_label = 4
-    config.create_count = 100
-    config.samples_to_keep = 5
+    config['create_label'] = 4 # TODO change which class to create 
+    config['create_count'] = 100
+    config['samples_to_keep'] = 5
     counter += 1
 
 def fad(model, hp_config, diffusion, labels = [0,1,2,3,4,5,6]):
     config = update_config_savesamples(hp_config)
-    if os.path.exists(config.output_path):
-        shutil.rmtree(config.output_path)
-    os.makedirs(config.output_path)
+    # if os.path.exists(config['output_path']):
+    #     shutil.rmtree(config['output_path'])
+    os.makedirs(config['output_path'])
     for label in labels:
-        config.create_label = label
+        config['create_label'] = label
         for i in range(10):
             torch.cuda.empty_cache()
             save_samples(model, diffusion, config, it=i)
-    fad_wrapper = FADWrapper.FADWrapper(generated_audio_samples_dir=config.output_path, ground_truth_audio_samples_dir=gt_embedding_path)
+    fad_wrapper = FADWrapper.FADWrapper(generated_audio_samples_dir=config['output_path'], ground_truth_audio_samples_dir=gt_embedding_path)
     fd = fad_wrapper.compute_fad()
     print(fd)
     
-    config.output_path = config.save_samples
-    config.create_count = config.samples_to_keep
-    save_samples(model, diffusion, config)
+    config['output_path'] = config['save_samples']
+    config['create_count'] = config['samples_to_keep']
+    # save_samples(model, diffusion, config)
+    for label in labels:
+        config['create_label'] = label
+        torch.cuda.empty_cache()
+        save_samples(model, diffusion, config, it=0)
 
     return np.mean(list(fd['FAD']))
 
@@ -55,24 +61,27 @@ def objective(trial):
     hp_config = {
         'model': trial.suggest_categorical('model', ['model1', 'model2', 'model3', 'model4', 'model5', 'model6']),
         # hyperparams
-        'batch_size': trial.suggest_categorical('batch_size', [16, 32, 64]),
+        'batch_size': trial.suggest_categorical('batch_size', [16, 32]),
         'optimizer': trial.suggest_categorical("optimizer", ["Adam", "RMSprop", "SGD"]),
         'lr': trial.suggest_float('lr', 1e-5, 1e-3),
+        # loading
+        'label_train': trial.suggest_categorical('label_train', [4, 6]),
+        # model
+        'step_count': trial.suggest_int('step_count', 100, 5000, 50),
+        'label_count': trial.suggest_categorical('label_count', [7]), # the labels we want to run the search for
         # diffusion
-        'step_count': trial.suggest_int('step_count', 50, 250, 500),
         'beta_start': trial.suggest_float('beta_start', 1e-5, 1e-3),
         'beta_end': trial.suggest_float('beta_end', 0.01, 0.04),
         'beta_schedule': trial.suggest_categorical('beta_schedule', ['quadratic', 'linear', 'sigmoid']),
         'beta_sigmoid': trial.suggest_float('beta_sigmoid', 0.15, 0.30),
         # sampling
-        'create_loop': trial.suggest_int('create_loop', 1, 3, 5),
+        'create_loop': trial.suggest_int('create_loop', 1, 5, 1),
     }
     
     # data loading and diffusion
     diffusion = Diffusion(hp_config, device)
     dataset = AudioDataset(diffusion, device)
-    train_loader = DataLoader(dataset, batch_size=hp_config['batch_size'],
-                              shuffle=True, num_workers=2)
+    train_loader = DataLoader(dataset, batch_size=hp_config['batch_size'], shuffle=True, num_workers=0)
     
     # model and optimizer
     if hp_config['model'] == "model1":
@@ -90,7 +99,6 @@ def objective(trial):
     
     model = UNet(device, hp_config)
     model.to(device)
-    optimizer = None
 
     if hp_config['optimizer'] == "Adam":
         optimizer = torch.optim.Adam(model.parameters(), lr=hp_config['lr'])
@@ -104,13 +112,13 @@ def objective(trial):
     
     # training
     model.train()
-    num_epochs = 1 # 250
+    num_epochs = 1 # 250 TODO change
     num_batches = len(train_loader)
     criterion = torch.nn.MSELoss()
     for epoch in tqdm.tqdm(range(num_epochs)):
-        #  # print the epoch and current time
-        # time_now = datetime.datetime.now().strftime("%H:%M")
-        # print(f"Start Epoch: {epoch + 1}/{num_epochs}   {time_now}")
+         # print the epoch and current time
+        time_now = datetime.datetime.now().strftime("%H:%M")
+        print(f"Start Epoch: {epoch + 1}/{num_epochs}   {time_now}")
         
         # loop through the training loader
         for i, (samples, targets, timesteps, labels) in enumerate(train_loader):

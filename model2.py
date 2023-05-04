@@ -58,8 +58,11 @@ class UNet(nn.Module):
         super(UNet, self).__init__()
         self.device = device
         self.sinusoidal = Sinusoidal(device)
-        self.step_count = config.step_count
-        self.label_count = config.label_count
+        # for hp search
+        self.step_count = config['step_count']
+        self.label_count = config['label_count']
+        # self.step_count = config.step_count
+        # self.label_count = config.label_count
 
         c1, c2, c3, c4 = 8, 8, 12, 16
         c5, c6, c7, c8 = 24, 24, 32, 48
@@ -75,8 +78,8 @@ class UNet(nn.Module):
 
         self.pool = nn.MaxPool1d(kernel_size=2, stride=2)
 
-        self.step_embedding = embedding(config.step_count, 344)
-        self.label_embedding = embedding(config.label_count, 344)
+        self.step_embedding = embedding(self.step_count, 344)
+        self.label_embedding = embedding(self.label_count, 344)
 
         self.up8 = up(c8 + 2, c8, pad=1)  # 344
         self.up7 = up(c8*2, c7)  # 689

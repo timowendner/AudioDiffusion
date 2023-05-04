@@ -21,7 +21,8 @@ config = {
     "5": "Rain",
     "6": "Sneeze_Cough"
     },
-    "label_train": [0, 1, 2, 3, 4, 5, 6],
+    # "label_train": [0, 1, 2, 3, 4, 5, 6],
+    "label_train": [4],
 }
 
 class AudioDataset(Dataset):
