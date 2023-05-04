@@ -1,0 +1,15 @@
+**/__pycache__/
+
+configs/
+fad_score/data/
+all_trained_models/
+
+data/
+eval/
+models/
+output/
+ph_notes/
+
+result*
+results*
+class4*
