@@ -12,18 +12,20 @@ from hp_dataloader import AudioDataset
 from hp_diffusion import Diffusion
 from hp_model import UNet 
 from hp_utils import save_model, save_samples
-# from fad_score import FADWrapper
-from eval import FADWrapper
+from fad_score import FADWrapper
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 counter = 0
 
+gt_embedding_path = os.path.join(os.getcwd(), 'fad_score', 'data', 'eval')
+
+
 def update_config_savesamples(config):
-    
     global counter
     config.output_path = '{}/generated_files'.format(config.model_name)
     config.save_samples = '{}/{}'.format(config.model_name, counter)
-    config.create_label = [0,1,2,3,4,5,6]
+    # config.create_label = [0,1,2,3,4,5,6]
+    config.create_label = 4
     config.create_count = 100
     config.samples_to_keep = 5
     counter += 1
@@ -38,7 +40,7 @@ def fad(model, hp_config, diffusion, labels = [0,1,2,3,4,5,6]):
         for i in range(10):
             torch.cuda.empty_cache()
             save_samples(model, diffusion, config, it=i)
-    fad_wrapper = FADWrapper.FADWrapper(generated_audio_samples_dir=config.output_path, ground_truth_audio_samples_dir="fad_score/data/eval")
+    fad_wrapper = FADWrapper.FADWrapper(generated_audio_samples_dir=config.output_path, ground_truth_audio_samples_dir=gt_embedding_path)
     fd = fad_wrapper.compute_fad()
     print(fd)
     
@@ -51,18 +53,19 @@ def fad(model, hp_config, diffusion, labels = [0,1,2,3,4,5,6]):
 def objective(trial):
     # Define the hyperparameters to search over
     hp_config = {
+        'model': trial.suggest_categorical('model', ['model1', 'model2', 'model3', 'model4', 'model5', 'model6']),
         # hyperparams
         'batch_size': trial.suggest_categorical('batch_size', [16, 32, 64]),
         'optimizer': trial.suggest_categorical("optimizer", ["Adam", "RMSprop", "SGD"]),
         'lr': trial.suggest_float('lr', 1e-5, 1e-3),
         # diffusion
-        'step_count': trial.suggest_int('step_count', 250, 500, 50),
+        'step_count': trial.suggest_int('step_count', 50, 250, 500),
         'beta_start': trial.suggest_float('beta_start', 1e-5, 1e-3),
         'beta_end': trial.suggest_float('beta_end', 0.01, 0.04),
         'beta_schedule': trial.suggest_categorical('beta_schedule', ['quadratic', 'linear', 'sigmoid']),
         'beta_sigmoid': trial.suggest_float('beta_sigmoid', 0.15, 0.30),
         # sampling
-        'create_loop': trial.suggest_int('create_loop', 1, 3),
+        'create_loop': trial.suggest_int('create_loop', 1, 3, 5),
     }
     
     # data loading and diffusion
@@ -72,15 +75,28 @@ def objective(trial):
                               shuffle=True, num_workers=2)
     
     # model and optimizer
+    if hp_config['model'] == "model1":
+        from model import UNet
+    elif hp_config['model'] == "model2":
+        from model2 import UNet
+    elif hp_config['model'] == "model3":
+        from model3 import UNet
+    elif hp_config['model'] == "model4":
+        from model4 import UNet
+    elif hp_config['model'] == "model5":
+        from model5 import UNet
+    elif hp_config['model'] == "model6":
+        from model6 import UNet
+    
     model = UNet(device, hp_config)
     model.to(device)
     optimizer = None
 
-    if(hp_config['optimizer'] == "Adam"):
+    if hp_config['optimizer'] == "Adam":
         optimizer = torch.optim.Adam(model.parameters(), lr=hp_config['lr'])
-    elif(hp_config['optimizer'] == "RMSprop"):
+    elif hp_config['optimizer'] == "RMSprop":
         optimizer = torch.optim.RMSprop(model.parameters(), lr=hp_config['lr'])
-    elif(hp_config['optimizer'] == "SGD"):
+    elif hp_config['optimizer'] == "SGD":
         optimizer = torch.optim.SGD(model.parameters(), lr=hp_config['lr'])
 
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)

@@ -1,7 +1,13 @@
-__pycache__/
+**/__pycache__/
 configs/
 data/
 models/
 output/
 ph_notes/
-eval/
+
+results*
+all_trained_models*
+class4*
+# tmp folder for FAD computation
+result* 
+fad_score_tmp

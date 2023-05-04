@@ -81,6 +81,12 @@ def main():
         from model2 import UNet
     elif config.model_number == 3:
         from model3 import UNet
+    elif config.model_number == 4: # tara changing kernel
+        from model4 import UNet
+    elif config.model_number == 5: # timo model dogbark beating benchmark
+        from model5 import UNet
+    elif config.model_number == 6: # tara changing kernel + channel sizes from model5
+        from model6 import UNet
 
     # create the model and the diffusion
     model = UNet(device, config).to(device)
@@ -94,8 +100,8 @@ def main():
 
     # print the number of trainable parameters
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(
-        f"Number of trainable parameters: {num_params:,}, with epoch {config.current_epoch}")
+    print(f"Number of trainable parameters: {num_params:,}"
+    print(f"Training for {config.num_epochs} epochs")
 
     # train the network
     if args.train:
@@ -103,7 +109,6 @@ def main():
 
     # create new samples
     save_samples(model, diffusion, config)
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Diffusion Model')
