@@ -13,8 +13,6 @@ import numpy as np
 import json
 import pandas as pd
 
-generator = torch.Generator().manual_seed(42)
-
 gt_embedding_path = os.path.join(os.getcwd(), 'fad_score', 'data', 'eval')
 
 def fad(model, config, diffusion, labels = [0,1,2,3,4,5,6]): # labels are the classes you want to generate for. Currently you also have to set "name_of_sound_list" manually
@@ -36,11 +34,9 @@ def fad(model, config, diffusion, labels = [0,1,2,3,4,5,6]): # labels are the cl
     return list(fd['FAD'])
 
 
-
 # models_address = 'all_trained_models'
 # dir = os.listdir(models_address)
 # config_json = json.load(open('config4.json'))
-
 
 # to be running on fs and rk
 # models_address = os.path.join(os.getcwd(), 'all_trained_models', 'classwise', 'quadratic') 
@@ -64,6 +60,8 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 config4.device = device
 
 model4 = UNet(device, config4).to(device)
+
+
 optimizer4 = torch.optim.Adam(model4.parameters(), lr=config4.lr)
 diffusion = Diffusion(config4)
 results= {}
