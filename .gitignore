@@ -1,29 +1,13 @@
 **/__pycache__/
 
 configs/
+data/
+models/
+output/
+ph_notes/
+
+# eval
 fad_score/data/
-all_trained_models/
-
-data/
-eval/
-models/
-output/
-ph_notes/
-
-result*
+_generated_samples_eval/
+result/
 results*
-__pycache__/
-
-_doc*
-ph_notes/
-
-configs/
-eval/
-fad_score/
-data/
-
-class4*
-fad_score_tmp/
-fad_score_data/
-models/
-output/

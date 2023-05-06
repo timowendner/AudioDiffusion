@@ -24,7 +24,8 @@ class FADWrapper:
             "moving_motor_vehicle",
             "rain",
             "sneeze_cough",
-        ]
+        ],
+        result_dir: str = "./result"
     ) -> None:
         self.name_of_sound_list= name_of_sound_list
         print(self.name_of_sound_list)
@@ -32,7 +33,7 @@ class FADWrapper:
             "gt": ground_truth_audio_samples_dir,
             "generated": generated_audio_samples_dir,
         }
-        self.output_dir: str = "./result"
+        self.output_dir: str = f"./result/{result_dir}"
         self.exist_mean_var_dict: Dict[str, bool] = {"gt": True, "generated": False}
         self.sample_rate: int = 22050
         self.number_of_audio_in_each_dir: int = 100
