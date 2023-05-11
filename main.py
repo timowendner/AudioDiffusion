@@ -18,7 +18,7 @@ from model import UNet
 
 def train_network(model, optimizer, diffusion, config):
     # create the dataset
-    dataset = AudioDataset(diffusion, config, model.device)
+    dataset = AudioDataset(diffusion, config, config.device)
     train_loader = DataLoader(dataset, batch_size=16,
                               shuffle=True, num_workers=0)
     # Train the model
