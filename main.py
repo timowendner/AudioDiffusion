@@ -19,7 +19,7 @@ from model import UNet
 def train_network(model, optimizer, diffusion, config):
     # create the dataset
     dataset = AudioDataset(diffusion, config, config.device)
-    train_loader = DataLoader(dataset, batch_size=16,
+    train_loader = DataLoader(dataset, batch_size=64,
                               shuffle=True, num_workers=0)
     # Train the model
     model.train()
@@ -31,7 +31,6 @@ def train_network(model, optimizer, diffusion, config):
         # print the epoch and current time
         time_now = datetime.datetime.now()
         time_now = time_now.strftime("%H:%M")
-        print(f"Start Epoch: {epoch + 1}/{config.num_epochs}   {time_now}")
 
         # loop through the training loader
         for i, (model_input, targets, t, labels) in enumerate(train_loader):

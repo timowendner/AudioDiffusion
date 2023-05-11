@@ -120,6 +120,5 @@ class UNet(nn.Module):
             x = torch.cat([encoder.pop(), x], 1)
 
         # apply the output
-        print(f"x: {x.shape}, t: {t.shape}, l: {l.shape}")
         x = self.output(x)
         return x
