@@ -60,6 +60,7 @@ def save_samples(model, diffusion, config):
 
     # create a new datapoint
     for i in range(config.create_count):
+        print(f'Start creating output: {i+1}')
         waveform = diffusion.sample(model, config)
         waveform = waveform[0, 0].to('cpu').numpy()
         waveform = waveform / np.max(waveform) * 0.9
