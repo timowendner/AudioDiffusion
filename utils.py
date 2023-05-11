@@ -20,27 +20,9 @@ def save_model(model, optimizer, config):
     # save the model
     filepath = join(config.model_path, f"{config.model_name}_{time_now}.p")
 
-    torch.save({
-        'model': model.state_dict(),
-        'optimizer': optimizer.state_dict(),
-        'epoch': config.current_epoch,
-    }, filepath)
-
-
-def save_model(model, optimizer, config):
-    if not exists(config.model_path):
-        os.makedirs(config.model_path)
-
-    # get the time now
-    time_now = datetime.datetime.now()
-    time_now = time_now.strftime("%d%b_%H%M")
-
-    # save the model
-    filepath = join(config.model_path, f"{config.model_name}_{time_now}.p")
-
     # define the config arguments to be saved
-    change_config = ("audio_length", "data_targetSD", "model_layers",
-                     "model_out", "model_kernel", "model_scale", 'current_epoch')
+    change_config = ("audio_length", "beta_start", "beta_end", "beta_schedule", "step_count",
+                     "model_layers", "model_out", "model_kernel", "model_scale", 'current_epoch')
     change_config = {arg: getattr(config, arg) for arg in change_config}
 
     # save everything
@@ -118,29 +100,3 @@ def create_model(config, load=False, lr=False):
         optimizer.load_state_dict(loaded['optimizer'])
 
     return model, config, optimizer
-
-
-def load_model(model, optimizer, config):
-    if not exists(config.model_path):
-        os.makedirs(config.model_path)
-        return None
-
-    files = [join(config.model_path, f) for f in os.listdir(
-        config.model_path) if isfile(join(config.model_path, f))]
-    files = sorted(files, key=getmtime)
-
-    if len(files) == 0:
-        return None
-    filepath = files[-1]
-
-    print(f'Load model: {filepath}')
-
-    loaded = torch.load(filepath)
-    model.load_state_dict(loaded['model'])
-    if not config.change_lr:
-        optimizer.load_state_dict(loaded['optimizer'])
-    config.current_epoch = loaded['epoch']
-
-    # with open(filepath, 'rb') as f:
-    #     model = pkl.load(f)
-    return model, optimizer

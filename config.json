@@ -22,7 +22,7 @@
     "create_loop": 2,
     "create_last": 0,
     "audio_length": 88200,
-    "model_layers": [32, 48, 64],
+    "model_layers": [32, 48, 64, 96],
     "model_out": [64, 32, 16],
     "model_kernel": 9,
     "model_scale": 4,

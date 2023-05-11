@@ -12,7 +12,7 @@ import os
 
 from dataloader import AudioDataset
 from diffusion import Diffusion
-from utils import save_model, load_model, save_samples
+from utils import save_model, create_model, save_samples
 from model import UNet
 
 
@@ -85,14 +85,8 @@ def main():
 
     # create the model and the diffusion
     model, config, optimizer = create_model(config, load=args.load, lr=args.lr)
-    model = UNet(device, config).to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
+    model = model.to(device)
     diffusion = Diffusion(config)
-    config.current_epoch = 0
-
-    # load the latest model
-    if args.load:
-        model, optimizer = load_model(model, optimizer, config)
 
     # print the number of trainable parameters
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -101,7 +95,7 @@ def main():
 
     # train the network
     if args.train:
-        model, optimizer = train_network(model, optimizer, diffusion, config)
+        train_network(model, optimizer, diffusion, config)
 
     # create new samples
     save_samples(model, diffusion, config)
@@ -115,6 +109,8 @@ if __name__ == '__main__':
                         help='Path to the configuration file')
     parser.add_argument('--load', action='store_true',
                         help='load a model')
+    parser.add_argument('--lr', type=float, default=False,
+                        help='change the learning rate')
     args = parser.parse_args()
 
     main()
