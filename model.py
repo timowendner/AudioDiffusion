@@ -99,8 +99,8 @@ class UNet(nn.Module):
     def forward(self, x: Tensor, timestamp: Tensor, label: Tensor) -> Tensor:
         timestamp = timestamp.to(self.device)
         label = (label * 100).to(self.device)
-        # apply the encoder
 
+        # apply the encoder
         encoder = []
         length = [i for i in reversed(self.length)]
         for layer in self.down:
