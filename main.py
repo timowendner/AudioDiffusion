@@ -59,7 +59,7 @@ def train_network(model, optimizer, diffusion, config):
         config.current_epoch += 1
 
         # save the model if enough time has passed
-        if abs(time.time() - start_time) >= 5*60 or epoch == config.num_epochs - 1:
+        if abs(time.time() - start_time) >= config.save_time or epoch == config.num_epochs - 1:
             save_model(model, optimizer, config)
             start_time = time.time()
     return model, optimizer
