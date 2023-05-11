@@ -14,7 +14,6 @@ class Diffusion(nn.Module):
 
         start = config.beta_start
         end = config.beta_end
-        a = config.beta_sigmoid
 
         # create the beta schedule
         t = torch.linspace(0, 1, self.steps, device=config.device)
@@ -22,9 +21,6 @@ class Diffusion(nn.Module):
             self.beta = start + (end - start) * t
         elif config.beta_schedule == 'quadratic':
             self.beta = start + (end - start) * t**2
-        elif config.beta_schedule == 'sigmoid':
-            self.beta = start + (end - start) * 1 / \
-                (1 + np.e ** -(a/(end - start)*(t - start-0.5)))
         else:
             raise AttributeError(
                 f'Beta Schedule {config.beta_schedule} is unknown')
