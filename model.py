@@ -98,6 +98,8 @@ class UNet(nn.Module):
         # apply the encoder
         encoder = []
         for layer in self.down:
+            print(x.shape)
+            print(layer)
             x = layer(x)
             t = self.sinusoidal(timestamp, 88200)
             l = self.sinusoidal(label, 88200)
