@@ -85,9 +85,10 @@ class UNet(nn.Module):
 
         # define the output layer
         output = nn.ModuleList([])
+        last += 2
         for channel in config.model_out:
             conv = nn.Conv1d(
-                last + 2, channel, kernel_size=kernel, padding=kernel//2)
+                last, channel, kernel_size=kernel, padding=kernel//2)
             output.append(conv)
             output.append(nn.ReLU())
             last = channel
@@ -103,12 +104,10 @@ class UNet(nn.Module):
         encoder = []
         length = [i for i in reversed(self.length)]
         for layer in self.down:
-            print(layer)
             t = self.sinusoidal(timestamp, length[-1])
             l = self.sinusoidal(label, length.pop())
             x = torch.cat([l, t, x], 1)
             x = layer(x)
-            print(f"x: {x.shape}, t: {t.shape}, l: {l.shape}")
             encoder.append(torch.cat([l, t, x], 1))
             x = self.pool(x)
 
@@ -121,5 +120,6 @@ class UNet(nn.Module):
             x = torch.cat([encoder.pop(), x], 1)
 
         # apply the output
+        print(f"x: {x.shape}, t: {t.shape}, l: {l.shape}")
         x = self.output(x)
         return x
