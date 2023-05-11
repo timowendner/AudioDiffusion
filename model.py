@@ -103,11 +103,11 @@ class UNet(nn.Module):
         encoder = []
         length = [i for i in reversed(self.length)]
         for layer in self.down:
-            print(x.shape)
             print(layer)
-            t = self.sinusoidal(timestamp, length.pop())
+            t = self.sinusoidal(timestamp, length[-1])
             l = self.sinusoidal(label, length.pop())
             x = torch.cat([l, t, x], 1)
+            print(f"x: {x.shape}, t: {t.shape}, l: {l.shape}")
             x = layer(x)
             encoder.append(torch.cat([l, t, x], 1))
             x = self.pool(x)
