@@ -53,6 +53,7 @@ def up(in_channel, out_channel, scale=2, kernel=9, pad=0):
 class UNet(nn.Module):
     def __init__(self, config):
         super(UNet, self).__init__()
+        self.device = config.device
 
         # define the pooling layer
         length = config.audio_length
