@@ -65,9 +65,11 @@ class UNet(nn.Module):
         # define the encoder
         last = 1
         pad = []
+        self.length = [length]
         self.down = nn.ModuleList([])
         for channel in config.model_layers:
             cur_pad, length = length % scale, length // scale
+            self.length.append(length)
             pad.append(cur_pad)
             layer = dual(last+2, channel, kernel=kernel)
             self.down.append(layer)
@@ -97,12 +99,14 @@ class UNet(nn.Module):
         timestamp = timestamp.to(self.device)
         label = (label * 100).to(self.device)
         # apply the encoder
+
         encoder = []
+        length = [i for i in reversed(self.length)]
         for layer in self.down:
             print(x.shape)
             print(layer)
-            t = self.sinusoidal(timestamp, 88200)
-            l = self.sinusoidal(label, 88200)
+            t = self.sinusoidal(timestamp, length.pop())
+            l = self.sinusoidal(label, length.pop())
             x = torch.cat([l, t, x], 1)
             x = layer(x)
             encoder.append(torch.cat([l, t, x], 1))
