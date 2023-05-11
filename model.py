@@ -54,6 +54,7 @@ class UNet(nn.Module):
     def __init__(self, config):
         super(UNet, self).__init__()
         self.device = config.device
+        self.sinusoidal = Sinusoidal(config.device)
 
         # define the pooling layer
         length = config.audio_length
