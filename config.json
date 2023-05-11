@@ -1,9 +1,8 @@
 {
-    "model_name": "port",
-    "model_number": 1,
-    "data_path": "/content/drive/MyDrive/AudioDiffusion/data",
-    "model_path": "/content/drive/MyDrive/AudioDiffusion/models",
-    "output_path": "/content/drive/MyDrive/AudioDiffusion/output",
+    "model_name": "dogs",
+    "data_path": "/Users/timowendner/Programming/AudioDiffusion/data",
+    "model_path": "/Users/timowendner/Programming/AudioDiffusion/models",
+    "output_path": "/Users/timowendner/Programming/AudioDiffusion/output",
     "label_path": {
       "0": "DogBark",
       "1": "Footstep",
@@ -13,19 +12,22 @@
       "5": "Rain",
       "6": "Sneeze_Cough"
     },
-    "label_train": [0, 1, 2, 3, 4, 5, 6],
-    "label_count": 7,
+    "label_train": [2],
     "step_count": 250,
-    "lr": 0.0001,
-    "create_loop": 2,
-    "create_label": 0,
-    "create_count": 10,
-    "num_epochs": 1000,
-    "audio_length": 88200,
     "beta_start": 0.0001,
-    "beta_end": 0.04,
-    "beta_sigmoid": 0.15,
+    "beta_end": 0.025,
     "beta_schedule": "quadratic",
-    "change_lr": false
+    "create_label": 2,
+    "create_count": 10,
+    "create_loop": 2,
+    "create_last": 0,
+    "audio_length": 88200,
+    "model_layers": [32, 48, 64],
+    "model_out": [64, 32, 16],
+    "model_kernel": 9,
+    "model_scale": 4,
+    "save_time": 300,
+    "lr": 0.0001,
+    "num_epochs": 1000
 }
 
