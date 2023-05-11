@@ -87,7 +87,7 @@ class UNet(nn.Module):
         output = nn.ModuleList([])
         for channel in config.model_out:
             conv = nn.Conv1d(
-                last, channel, kernel_size=kernel, padding=kernel//2)
+                last + 2, channel, kernel_size=kernel, padding=kernel//2)
             output.append(conv)
             output.append(nn.ReLU())
             last = channel
