@@ -37,7 +37,7 @@ class Diffusion(nn.Module):
 
     @torch.no_grad()
     def sample(self, model, config):
-        n = config.create_count
+        n = 1
         labels = [config.create_label + 1] * n
         model.eval()
 

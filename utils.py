@@ -37,10 +37,6 @@ def save_samples(model, diffusion, config):
     if not exists(config.output_path):
         os.makedirs(config.output_path)
 
-    # create a new datapoint
-    output = diffusion.sample(model, config)
-    output = output.to('cpu')
-
     # get the time now
     time_now = datetime.datetime.now()
     time_now = time_now.strftime("%d%b_%H%M")
@@ -62,10 +58,12 @@ def save_samples(model, diffusion, config):
     for f in os.listdir(folderpath):
         os.remove(join(folderpath, f))
 
-    for i, data in enumerate(output):
-        data = data[0, :].numpy()
-        data = data / np.max(data) * 0.9
-        scaled = np.int16(data * 32767)
+    # create a new datapoint
+    for i in range(config.create_count):
+        waveform = diffusion.sample(model, config)
+        waveform = waveform[0, 0].to('cpu').numpy()
+        waveform = waveform / np.max(waveform) * 0.9
+        scaled = np.int16(waveform * 32767)
         name = f'output_{time_now}_{i:2}.wav'
         write(join(folderpath, name), 22050, scaled)
 
