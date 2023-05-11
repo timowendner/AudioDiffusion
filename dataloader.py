@@ -43,7 +43,8 @@ class AudioDataset(Dataset):
         waveform = waveform * (1 - np.random.normal(0, 0.15)**2)
 
         # create a different starting point and roll the data over
-        waveform = torch.roll(waveform, np.random.randint(waveform.shape[0]))
+        waveform = torch.roll(
+            waveform, np.random.randint(waveform.shape[1]), dims=1)
 
         # create the diffusion
         max_timestamp = self.diffusion.steps

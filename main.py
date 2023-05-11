@@ -13,6 +13,7 @@ import os
 from dataloader import AudioDataset
 from diffusion import Diffusion
 from utils import save_model, load_model, save_samples
+from model import UNet
 
 
 def train_network(model, optimizer, diffusion, config):
@@ -48,6 +49,13 @@ def train_network(model, optimizer, diffusion, config):
                       f'Step [{i + 1}/{total_step}]',
                       f'Loss: {loss.item():.4f}')
 
+        lr = optimizer.param_groups[0]['lr']
+        print(f"End Epoch: {epoch + 1}/{config.num_epochs}",
+              f"Loss: {loss.item():.4f}",
+              f"    {time_now}",
+              f"   (lr: {lr}) "
+              )
+
         # add the number of epochs
         config.current_epoch += 1
 
@@ -69,20 +77,14 @@ def main():
     config = Config()
     for key, data in config_json.items():
         setattr(config, key, data)
+    config.current_epoch = 0
 
     # set the device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     config.device = device
 
-    # load the right model
-    if config.model_number == 1:
-        from model import UNet
-    elif config.model_number == 2:
-        from model2 import UNet
-    elif config.model_number == 3:
-        from model3 import UNet
-
     # create the model and the diffusion
+    model, config, optimizer = create_model(config, load=args.load, lr=args.lr)
     model = UNet(device, config).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
     diffusion = Diffusion(config)
