@@ -66,8 +66,10 @@ def save_samples(model, diffusion, config):
         waveform = waveform[0, 0].to('cpu').numpy()
 
         # remove any clicks at the start and end
-        waveform[-50:] = waveform[-50:] * np.linspace(1, 0.01, 50) ** 1.25
-        waveform[:50] = waveform[:50] * np.linspace(0.01, 1, 50) ** 1.25
+        cut = 200
+        lin = np.cos(np.linspace(1, 0, cut)**2 * np.pi) / 2 + 0.5
+        waveform[:cut] = waveform[:cut] * lin
+        waveform[-cut:] = waveform[-cut:] * lin[::-1]
 
         # normalize the waveform and write the file
         waveform = waveform / np.max(waveform) * 0.65
