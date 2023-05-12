@@ -61,9 +61,16 @@ def save_samples(model, diffusion, config):
     # create a new datapoint
     for i in range(config.create_count):
         print(f'Start creating output: {i+1}')
+        # create a new waveform
         waveform = diffusion.sample(model, config)
         waveform = waveform[0, 0].to('cpu').numpy()
-        waveform = waveform / np.max(waveform) * 0.9
+
+        # remove any clicks at the start and end
+        waveform[-50:] = waveform[-50:] * np.linspace(1, 0.01, 50) ** 1.25
+        waveform[:50] = waveform[:50] * np.linspace(0.01, 1, 50) ** 1.25
+
+        # normalize the waveform and write the file
+        waveform = waveform / np.max(waveform) * 0.8
         scaled = np.int16(waveform * 32767)
         name = f'output_{time_now}_{i:2}.wav'
         write(join(folderpath, name), 22050, scaled)
