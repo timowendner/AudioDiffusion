@@ -70,7 +70,7 @@ def save_samples(model, diffusion, config):
         waveform[:50] = waveform[:50] * np.linspace(0.01, 1, 50) ** 1.25
 
         # normalize the waveform and write the file
-        waveform = waveform / np.max(waveform) * 0.8
+        waveform = waveform / np.max(waveform) * 0.65
         scaled = np.int16(waveform * 32767)
         name = f'output_{time_now}_{i:2}.wav'
         write(join(folderpath, name), 22050, scaled)
