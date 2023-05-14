@@ -1,0 +1,67 @@
+import wave
+import audioop
+
+
+def check_wav_file(filename):
+    with wave.open(filename, 'rb') as wav_file:
+        channels = wav_file.getnchannels()
+        sample_width = wav_file.getsampwidth()
+        sample_rate = wav_file.getframerate()
+        duration = wav_file.getnframes() / float(sample_rate)
+        
+        if channels == 1 and sample_width == 2 and sample_rate == 22050 and duration == 4:
+            pass
+            #print("The WAV file is already in the desired format.")
+        else:
+          print(filename)
+          if channels != 1:
+            print('not mono', channels)
+          if sample_width != 2:
+            print('not 16bit: ', sample_width)
+          if sample_rate != 22050:
+            print('not 22050Hz: ', sample_rate)
+          if duration != 4:
+            print('duration: ', duration)
+
+          print("The WAV file needs to be converted.")
+
+
+def convert_wav_file(filename):
+    # Open the input WAV file
+    with wave.open(filename, 'rb') as wav_file:
+        # Read the properties of the input file
+        channels = wav_file.getnchannels()
+        sample_width = wav_file.getsampwidth()
+        sample_rate = wav_file.getframerate()
+
+        # Check if conversion is needed
+        if channels != 1 or sample_width != 2 or sample_rate != 22050:
+            #print("Converting the WAV file...")
+
+            # Read the audio data
+            frames = wav_file.readframes(wav_file.getnframes())
+
+            # Convert to mono
+            if channels != 1:
+                frames = audioop.tomono(frames, sample_width, 1, 1)
+
+            # Convert sample width to 16 bits
+            if sample_width != 2:
+                frames = audioop.lin2lin(frames, sample_width, 2)
+
+            # Convert sampling rate to 22050 Hz
+            if sample_rate != 22050:
+                frames, _ = audioop.ratecv(frames, sample_width, channels, sample_rate, 22050, None)
+
+            # Create a new WAV file with the modified properties
+            folder_path, filename = os.path.split(filename)
+            output_filename = os.path.join(folder_path,"converted_"+filename)
+            with wave.open(output_filename, 'wb') as output_wav_file:
+                output_wav_file.setnchannels(1)
+                output_wav_file.setsampwidth(2)
+                output_wav_file.setframerate(22050)
+                output_wav_file.writeframes(frames)
+
+            #print("Conversion completed. Saved as", output_filename)
+        else:
+            print("The WAV file is already in the desired format.")
