@@ -7,10 +7,26 @@ import torch.nn.functional as F
 
 class Sinusoidal(nn.Module):
     def __init__(self, device):
+        """
+        Initializes a module that generates a tensor of sinusoidal functions
+
+        Args:
+            device (torch.device): The device on which the tensor is generated
+        """
         super(Sinusoidal, self).__init__()
         self.device = device
 
-    def forward(self, position: torch.Tensor, length: int) -> torch.Tensor:
+    def forward(self, position: Tensor, length: int) -> Tensor:
+        """
+        Generates a tensor of sinusoidal functions with a given position and length
+
+        Args:
+            position (torch.Tensor): A tensor of shape (batch size, 1, 1) referring to timestamp or label
+            length (int): The length of the sinusoidal function
+
+        Returns:
+            torch.Tensor: A tensor of shape (batch size, 1, length) containing the generated sinusoidal functions.
+        """
         n = position.shape[0]
         values = torch.arange(length, device=self.device)
         output = torch.zeros((n, length), device=self.device)
@@ -21,7 +37,19 @@ class Sinusoidal(nn.Module):
         return output.view(n, 1, -1)
 
 
-def dual(in_channel, out_channel, kernel=9):
+def dual(in_channel: int, out_channel: int, kernel=9):
+    """
+    Constructs a dual convolutional block consisting of two 1D convolutional layers with dropout, batch normalization,
+    and ReLU activation
+
+    Args:
+        in_channel (int): The number of input channels
+        out_channel (int): The number of output channels
+        kernel (int, optional): The size of the convolutional kernel. Defaults to 9
+
+    Returns:
+        nn.Sequential: The dual convolutional block.
+    """
     return nn.Sequential(
         nn.Conv1d(in_channel, out_channel,
                   kernel_size=kernel, padding=kernel//2),
@@ -35,6 +63,20 @@ def dual(in_channel, out_channel, kernel=9):
 
 
 def up(in_channel, out_channel, scale=2, kernel=9, pad=0):
+    """
+    Constructs an upsampling block consisting of two 1D convolutional layers with dropout, batch normalization,
+    ReLU activation, and a transposed convolutional layer
+
+    Args:
+        in_channel (int): The number of input channels
+        out_channel (int): The number of output channels
+        scale (int, optional): The scale factor for upsampling. Defaults to 2
+        kernel (int, optional): The size of the convolutional kernel. Defaults to 9
+        pad (int, optional): The amount of output padding. Defaults to 0
+
+    Returns:
+        nn.Sequential: The upsampling block
+    """
     return nn.Sequential(
         nn.Conv1d(in_channel, in_channel,
                   kernel_size=kernel, padding=kernel//2),
@@ -52,6 +94,12 @@ def up(in_channel, out_channel, scale=2, kernel=9, pad=0):
 
 class UNet(nn.Module):
     def __init__(self, config):
+        """
+        Initializes the U-Net model for audio denoising
+
+        Args:
+            config (Config): the configuration object for the model
+        """
         super(UNet, self).__init__()
         self.device = config.device
         self.sinusoidal = Sinusoidal(config.device)
@@ -97,6 +145,17 @@ class UNet(nn.Module):
         self.output = nn.Sequential(*output)
 
     def forward(self, x: Tensor, timestamp: Tensor, label: Tensor) -> Tensor:
+        """
+        Applies a forward pass through the U-Net model for audio denoising.
+
+        Args:
+            x (Tensor): the input audio signal, with shape (batch_size, 1, audio_length).
+            timestamp (Tensor): the timestamp vector, with shape (batch_size, 1).
+            label (Tensor): the label vector, with shape (batch_size, 1).
+
+        Returns:
+            Tensor: the denoised audio signal, with shape (batch_size, 1, audio_length).
+        """
         timestamp = timestamp.to(self.device)
         label = (label * 100).to(self.device)
 

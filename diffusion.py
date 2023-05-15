@@ -7,8 +7,16 @@ from itertools import chain
 
 class Diffusion(nn.Module):
     def __init__(self, config) -> None:
-        super(Diffusion, self).__init__()
+        """
+        Initializes a diffusion model
 
+        Args:
+            config (Config): the configuration object for the model
+
+        Raises:
+            AttributeError: If an unknown beta schedule is provided in the configuration
+        """
+        super(Diffusion, self).__init__()
         self.steps = config.step_count
         self.length = config.audio_length
 
@@ -29,7 +37,16 @@ class Diffusion(nn.Module):
         self.alpha_hat = torch.cumprod(self.alpha, dim=0)
 
     def forward(self, x, t):
-        # create the noise and compute the noise audio-file
+        """adds noise to an audio-file
+
+        Args:
+            x (torch.tensor): The input audio-file
+            t (int): The timestamp for the noise generation
+
+        Returns:
+            x_t (torch.Tensor): The audio-file with added noise.
+            noise (torch.Tensor): The noise that was added to the audio-file.
+        """
         noise = torch.randn_like(x)
         x_t = sqrt(self.alpha_hat[t]) * x + sqrt(1 - self.alpha_hat[t]) * noise
 
@@ -37,6 +54,18 @@ class Diffusion(nn.Module):
 
     @torch.no_grad()
     def sample(self, model, config):
+        """
+        Generates new audio samples using a specified model
+
+        Args:
+            model (torch.nn.Module): The model used to generate the samples
+            config (Config): the configuration object for the model
+
+        Returns:
+            torch.Tensor: A tensor containing the generated audio samples. The shape of the tensor is
+                (samples, 1, audio_length), where 'samples' is the number of generated audio samples, '1'
+                indicates a single audio channel (mono), and 'audio_length' is the duration of each audio sample
+        """
         n = 1
         labels = [config.create_label + 1] * n
         model.eval()
@@ -61,11 +90,11 @@ class Diffusion(nn.Module):
                 timestamp = timestamp.view(-1, 1)
                 predicted_noise = model(x, timestamp, l)
 
+                # remove the predicted noise and add new noise
                 if i == self.steps - 1:
                     noise = torch.zeros_like(x)
                 else:
                     noise = torch.randn_like(x)
-
                 x = 1 / sqrt(alpha) * (x - ((1 - alpha) / (sqrt(1 - alpha_hat)))
                                        * predicted_noise) + sqrt(beta) * noise
 

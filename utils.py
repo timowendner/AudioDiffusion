@@ -10,6 +10,14 @@ from model import UNet
 
 
 def save_model(model, optimizer, config):
+    """
+    Saves the model, optimizer, and configuration to the specified path.
+
+    Args:
+        model (nn.Module): The PyTorch model to save.
+        optimizer (optim.Optimizer): The PyTorch optimizer to save.
+        config (Config): The configuration object to save.
+    """
     if not exists(config.model_path):
         os.makedirs(config.model_path)
 
@@ -34,6 +42,15 @@ def save_model(model, optimizer, config):
 
 
 def save_samples(model, diffusion, config):
+    """
+    Generates audio samples using the given `model` and `diffusion` objects, and saves them to the specified output
+    directory using the configuration in `config`.
+
+    Args:
+        model (nn.Module): The PyTorch model used to generate audio samples.
+        diffusion (Diffusion): The `Diffusion` object used to sample noise for the model.
+        config (Config): the configuration object for the model
+    """
     if not exists(config.output_path):
         os.makedirs(config.output_path)
 
@@ -79,6 +96,19 @@ def save_samples(model, diffusion, config):
 
 
 def create_model(config, load=False, lr=False):
+    """
+    Creates a new UNet model with the specified configuration or loads an existing one if `load` is True.
+
+    Args:
+        config (argparse.Namespace): The configuration settings for the model.
+        load (bool): Whether to load an existing model (default False).
+        lr (float): The learning rate for the optimizer (default False).
+
+    Returns:
+        model (torch.nn.Module): The UNet model.
+        config (Config): the configuration object for the model
+        optimizer (torch.optim.Optimizer): The optimizer used to train the model.
+    """
     if not exists(config.model_path):
         os.makedirs(config.model_path)
 
