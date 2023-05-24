@@ -48,7 +48,7 @@ class Diffusion(nn.Module):
         x = torch.randn(n, 1, self.length, device=config.device)
         l = torch.tensor(labels, device=config.device).view(-1, 1)
 
-        print('Start creating Samples')
+        # print('Start creating Samples')
 
         # loop through all timesteps
         for i in range(1, self.steps):
@@ -74,8 +74,8 @@ class Diffusion(nn.Module):
                 x = 1 / sqrt(alpha) * (x - ((1 - alpha) / (sqrt(1 - alpha_hat)))
                                        * predicted_noise) + sqrt(beta) * noise
 
-            if i % (self.steps // 10) == 0:
-                print(f'Step [{i}/{self.steps}]')
+            # if i % (self.steps // 10) == 0:
+            #     print(f'Step [{i}/{self.steps}]')
 
         model.train()
         return x

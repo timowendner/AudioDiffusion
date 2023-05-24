@@ -42,7 +42,7 @@ class AudioDataset(Dataset):
         # Apply gain
         waveform = waveform * (1 - np.random.normal(0, 0.15)**2)
 
-        # create a different starting point and roll the data over
+        # # create a different starting point and roll the data over
         waveform = torch.roll(waveform, np.random.randint(waveform.shape[0]))
 
         # create the diffusion

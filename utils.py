@@ -64,7 +64,7 @@ def save_samples(model, diffusion, config, it=0):
         write(join(folderpath, name), 22050, scaled)
 
 
-def load_model(model, optimizer, config): # TODO fix loading
+def load_model(model, optimizer, config): 
     if not exists(config.model_path):
         os.makedirs(config.model_path)
         return None

@@ -11,3 +11,5 @@ fad_score/data/
 _generated_samples_eval/
 result/
 results*
+data_augmented/
+data_augmentation.py
